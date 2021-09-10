@@ -21,7 +21,7 @@ import { render } from "react-dom";
 
 
 
-class SerialsScreen extends Component {
+class SerialScreen extends Component {
     constructor (props){
         super(props);
         this.state = {
@@ -36,24 +36,23 @@ class SerialsScreen extends Component {
     }
     
 
-  goWatch(frame) {
-    var p = frame
-      .toString()
-      .replace("\\", "")
-      .replace("//", "https://")
-      .replace("640", "100%")
-      .replace("480", "100%");
-    useNavigation().navigation.navigate("watch", { frame: p });
-  }
+    handleRefreshing = () => {
+        this.setState({data: [], refreshing : true, page: 1}, ()=>{
+            this.searchFilms("", false, 'refresh')
+        })
+    }
 
-  searchFilms (text) {
-    this.state.loading =true;
-    return fetch(
-      "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&query=" +
-        text +
-        "&page=" +
+
+  searchFilms (text, search = false, type) {
+    var url = "";
+    if (search == true){
+        url = "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&query=" +
+        text 
+    }else {
+        url = "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&page=" +
         this.state.page
-    )
+    }
+    return fetch(url)
       .then((response) => response.json())
       .then((json) => {
         var data1 = [];
@@ -69,10 +68,17 @@ class SerialsScreen extends Component {
             frame: entry.iframe,
           });
         });
-        this.setState({data: this.state.data.concat(data1), refreshing : false})
+
+        if (search == true) {
+            this.setState({data: data1})
+        }else{
+            //alert(type)
+            this.setState({data: this.state.data.concat(data1), refreshing : false})
+        }
+        
       })
       .catch((error) => {
-        console.error(error);
+        alert(error)
       });
   };
 
@@ -80,47 +86,10 @@ class SerialsScreen extends Component {
     this.searchFilms("");
   }
 
-  renderItem ({ item }){
-    return (
-      <TouchableWithoutFeedback
-        activeOpacity={1}
-        key={item.id}
-        onPress={() => {
-          this.goWatch(item.frame);
-        }}
-      >
-        <View
-          style={{
-            width: Dimensions.get('window').width * 0.45,
-            padding: 5,
-            height: Dimensions.get('window').height * 0.3,
-          }}
-        >
-          <ImageBackground
-            source={{ uri: item.uri }}
-            style={{
-              resizeMode: "stretch",
-              flex: 1,
-            }}
-            imageStyle={{ borderRadius: 6 }}
-          >
-            <View style={s.filmSearchText}>
-              <Text style={{ color: "white", fontSize: 15 }}>
-                {item.title} [{item.year}]
-              </Text>
-            </View>
-          </ImageBackground>
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
-    handleRefreshing = () => {
-        this.setState({data: [], refreshing : true, page: 1}, ()=>{
-            this.searchFilms("")
-        })
-    }
+    
 
   render() {
+      
     return (
       <View
         onPress={Keyboard.dismiss}
@@ -139,7 +108,7 @@ class SerialsScreen extends Component {
             placeholder="Поиск"
             keyboardAppearance="dark"
             onChangeText={(text) => {
-              this.searchFilms(text, page);
+              this.searchFilms(text, true, 'input');
             }}
             keyboardType="default"
             style={{
@@ -162,16 +131,55 @@ class SerialsScreen extends Component {
           <FlatList
             style={{ backgroundColor: "#100e19" }}
             data={this.state.data}
-            onEndReachedThreshold={0}
+            onEndReachedThreshold={0.5}
             refreshing={this.state.refreshing}
             onRefresh={this.handleRefreshing}
             onEndReached={() => {
                 this.setState({page: this.state.page + 1}, ()=>{
-                    this.searchFilms("")
+                    this.searchFilms("", false, 'end')
                 })
             }}
             numColumns={this.state.numColumns}
-            renderItem={this.renderItem}
+            renderItem={({item})=>{
+                return (
+                    <TouchableWithoutFeedback
+                      activeOpacity={1}
+                      key={item.id}
+                      onPress={()=>{
+                          var p = item.frame
+                          .toString()
+                          .replace("\\", "")
+                          .replace("//", "https://")
+                          .replace("640", "100%")
+                          .replace("480", "100%");
+                            this.props.navigation.navigate("watch", { frame: p });
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: Dimensions.get('window').width * 0.45,
+                          padding: 5,
+                          height: Dimensions.get('window').height * 0.3,
+                        }}
+                      >
+                        <ImageBackground
+                          source={{ uri: item.uri }}
+                          style={{
+                            resizeMode: "stretch",
+                            flex: 1,
+                          }}
+                          imageStyle={{ borderRadius: 6 }}
+                        >
+                          <View style={s.filmSearchText}>
+                            <Text style={{ color: "white", fontSize: 15 }}>
+                              {item.title} [{item.year}]
+                            </Text>
+                          </View>
+                        </ImageBackground>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  );
+            }}
             keyExtractor={(item) => item.id}
           />
         </View>
@@ -180,4 +188,4 @@ class SerialsScreen extends Component {
   }
 }
 
-export default SerialsScreen;
+export default SerialScreen;
