@@ -1,28 +1,29 @@
 import React, { useEffect, useState} from 'react';
 import s from '../style'
-import { View, Text, ScrollView, SafeAreaView,  Dimensions, Animated,ActivityIndicator, ImageBackground, TouchableOpacity} from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, Dimensions, Animated, ImageBackground, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+
 const OFFSET = 40
-const ITEM_WIDTH = Dimensions.get("window").width - 50
+const ITEM_WIDTH = Dimensions.get("window").width -50
 const ITEM_HEIGHT = 240
 
 
 
-export default function SerialsCarousel (){
+export default function AnimeCarousel (){
   const scrollX = React.useRef(new Animated.Value(0)).current
   const [data, setData] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   const getMoviesFromApi = () => {
-    return fetch('https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=10')
+    return fetch('https://videocdn.tv/api/animes?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=10')
       .then((response) => response.json())
       .then((json) => {
         var data = [];
         json.data.forEach((entry)=>{
-            data.push({"uri" : 'http://st.kp.yandex.net/images/film_iphone/iphone360_'+entry.kinopoisk_id + '.jpg', "title" : entry.ru_title, "year" : entry.start_date.split('-')[0], "frame" : entry.iframe})
+            data.push({"uri" : 'http://st.kp.yandex.net/images/film_iphone/iphone360_'+entry.kinopoisk_id + '.jpg', "title" : entry.ru_title, "year" : entry.year.split('-')[0], "frame" : entry.iframe})
         })
+        
         setLoading(false)
         setData(data)
 
@@ -31,7 +32,6 @@ export default function SerialsCarousel (){
         console.error(error);
       });
   };
-
   const navigation = useNavigation();
   function goWatch(frame) {
     var p = frame.toString().replace('\\', '').replace('//', 'https://').replace('640', '100%').replace('480', '100%')
@@ -44,6 +44,7 @@ export default function SerialsCarousel (){
 
 
   return (
+    
     <SafeAreaView style={{ flex: 1, backgroundColor: "#100e19" }}>
       <View style={s.loading}>
       <ActivityIndicator
@@ -56,7 +57,7 @@ export default function SerialsCarousel (){
         horizontal={true}
         decelerationRate={"normal"}
         snapToInterval={ITEM_WIDTH}
-        style={{ marginTop: 10, paddingHorizontal: 15 }}
+        style={{ marginTop: 10, paddingHorizontal: 15}}
         showsHorizontalScrollIndicator={false}
         bounces={false}
         disableIntervalMomentum
@@ -66,6 +67,7 @@ export default function SerialsCarousel (){
         )}
         scrollEventThrottle={12}
       >
+        
         {data.map((item, idx) => {
           const inputRange = [
             (idx - 1) * ITEM_WIDTH,
@@ -86,8 +88,8 @@ export default function SerialsCarousel (){
           return (
             <TouchableOpacity
             activeOpacity={1}
-            style={s.item}
             key={idx}
+            style={s.item}
             onPress={() => {
               goWatch(item.frame)
             }}>

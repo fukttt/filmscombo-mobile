@@ -1,11 +1,11 @@
 import React, { useEffect, useState} from 'react';
 import s from '../style'
-import { View, Text, ScrollView, SafeAreaView,  Dimensions, Animated, ImageBackground, TouchableOpacity} from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, Dimensions, Animated, ImageBackground, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 
 const OFFSET = 40
-const ITEM_WIDTH = Dimensions.get("window").width
+const ITEM_WIDTH = Dimensions.get("window").width -50
 const ITEM_HEIGHT = 240
 
 
@@ -13,6 +13,7 @@ const ITEM_HEIGHT = 240
 export default function FilmsCarousel (){
   const scrollX = React.useRef(new Animated.Value(0)).current
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getMoviesFromApi = () => {
     return fetch('https://videocdn.tv/api/movies?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=10')
@@ -23,6 +24,7 @@ export default function FilmsCarousel (){
             data.push({"uri" : 'http://st.kp.yandex.net/images/film_iphone/iphone360_'+entry.kinopoisk_id + '.jpg', "title" : entry.ru_title, "year" : entry.year.split('-')[0], "frame" : entry.iframe})
         })
         
+        setLoading(false)
         setData(data)
 
       })
@@ -42,12 +44,20 @@ export default function FilmsCarousel (){
 
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#100e19" }}>
+      <View style={s.loading}>
+      <ActivityIndicator
+        animating={loading}
+        hidesWhenStopped={true}
+        size="large"
+      />
+      </View>
       <ScrollView
         horizontal={true}
         decelerationRate={"normal"}
         snapToInterval={ITEM_WIDTH}
-        style={{ marginTop: 10, paddingHorizontal: 0 }}
+        style={{ marginTop: 10, paddingHorizontal: 15}}
         showsHorizontalScrollIndicator={false}
         bounces={false}
         disableIntervalMomentum
@@ -57,6 +67,7 @@ export default function FilmsCarousel (){
         )}
         scrollEventThrottle={12}
       >
+        
         {data.map((item, idx) => {
           const inputRange = [
             (idx - 1) * ITEM_WIDTH,

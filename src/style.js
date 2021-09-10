@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const deviceHeight = Dimensions.get("window").height;
+const deviceWidth = Dimensions.get("window").width;
 
 const stylesheet = StyleSheet.create({
     alwaysred: {
@@ -18,14 +21,25 @@ const stylesheet = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#100e19',
     },
+    statusBar: {
+        height: 40,
+      },
+      appBar: {
+        backgroundColor:'#79B45D',
+        height: 20,
+      },
+      content: {
+        flex: 1,
+        backgroundColor: '#33373B',
+      },
     title: {
-        paddingHorizontal:10,
-        color: 'black',
+        paddingHorizontal:20,
+        color: 'white',
         fontSize: 20,
         marginBottom: 10,
-        marginTop: 10
+        marginTop: 20
     },
     buttonText: {
         color: 'white'
@@ -33,6 +47,7 @@ const stylesheet = StyleSheet.create({
     filmText : {
         marginLeft: 0,
         marginRight : 'auto',
+        maxWidth: deviceWidth*.5,
         backgroundColor: '#6d23b6',
         padding: 10,
         position: 'absolute',
@@ -57,9 +72,32 @@ const stylesheet = StyleSheet.create({
       containerd: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-between',
-    
+        paddingTop: 35,
+        backgroundColor: '#100e19'
       },
+      loading :  {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
+      },
+      filmSearchText: {
+          
+          backgroundColor: '#6d23b6',
+          color: 'white',
+          textAlign : 'center',
+          position : 'absolute',
+          marginBottom : 0,
+          maxWidth : deviceWidth * .4,
+          padding: 8,
+          borderBottomRightRadius: 10,
+          borderWidth: 2,
+          opacity: .85, 
+          borderColor : 'white'
+      }
       
     
 });
