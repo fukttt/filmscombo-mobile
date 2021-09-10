@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { Component } from "react";
 import {
   View,
   Text,
   ActivityIndicator,
   TextInput,
+  FlatList,
   TouchableOpacity,
   Dimensions,
+  RefreshControl,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -14,34 +16,50 @@ import { FontAwesome } from "@expo/vector-icons";
 import { ScrollView } from "react-native";
 import { ImageBackground } from "react-native";
 import s from "../style";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import { render } from "react-dom";
 
-const deviceHeight = Dimensions.get("window").height;
-const deviceWidth = Dimensions.get("window").width;
 
-const SerialsScreen = () => {
-  const [data, setData] = useState([]);
-  const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
 
-  function goWatch(frame) {
-    var p = frame.toString().replace('\\', '').replace('//', 'https://').replace('640', '100%').replace('480', '100%')
-    navigation.navigate('watch', {frame : p})
-  } 
+class SerialsScreen extends Component {
+    constructor (props){
+        super(props);
+        this.state = {
+            data: [],
+            deviceHeight : 0,
+            deviceWidth : 0,
+            page: 1,
+            loading: true,
+            refreshing: false,
+            numColumns: 2,
+        };
+    }
+    
 
-  const searchFilms = (text) => {
-    setData([]);
-    if (text != "") setLoading(true);
+  goWatch(frame) {
+    var p = frame
+      .toString()
+      .replace("\\", "")
+      .replace("//", "https://")
+      .replace("640", "100%")
+      .replace("480", "100%");
+    useNavigation().navigation.navigate("watch", { frame: p });
+  }
 
+  searchFilms (text) {
+    this.state.loading =true;
     return fetch(
       "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&query=" +
-        text
+        text +
+        "&page=" +
+        this.state.page
     )
       .then((response) => response.json())
       .then((json) => {
-        var data = [];
+        var data1 = [];
         json.data.forEach((entry) => {
-          data.push({
+          data1.push({
+            id: entry.id,
             uri:
               "http://st.kp.yandex.net/images/film_iphone/iphone360_" +
               entry.kinopoisk_id +
@@ -51,28 +69,68 @@ const SerialsScreen = () => {
             frame: entry.iframe,
           });
         });
-        setLoading(false);
-        setData(data);
+        this.setState({data: this.state.data.concat(data1), refreshing : false})
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  useEffect(() => {
-    searchFilms('');
-  }, []);
+  componentDidMount() {
+    this.searchFilms("");
+  }
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView horizontal={false} style={{ backgroundColor: "#11324D" }}>
+  renderItem ({ item }){
+    return (
+      <TouchableWithoutFeedback
+        activeOpacity={1}
+        key={item.id}
+        onPress={() => {
+          this.goWatch(item.frame);
+        }}
+      >
         <View
           style={{
-            flex: 1,
-            paddingTop: 50,
+            width: Dimensions.get('window').width * 0.45,
+            padding: 5,
+            height: Dimensions.get('window').height * 0.3,
+          }}
+        >
+          <ImageBackground
+            source={{ uri: item.uri }}
+            style={{
+              resizeMode: "stretch",
+              flex: 1,
+            }}
+            imageStyle={{ borderRadius: 6 }}
+          >
+            <View style={s.filmSearchText}>
+              <Text style={{ color: "white", fontSize: 15 }}>
+                {item.title} [{item.year}]
+              </Text>
+            </View>
+          </ImageBackground>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
+    handleRefreshing = () => {
+        this.setState({data: [], refreshing : true, page: 1}, ()=>{
+            this.searchFilms("")
+        })
+    }
+
+  render() {
+    return (
+      <View
+        onPress={Keyboard.dismiss}
+        style={{ flex: 1, backgroundColor: "#100e19" }}
+      >
+        <View
+          style={{
             backgroundColor: "#100e19",
             paddingVertical: 15,
-            paddingHorizontal: 15,
+            paddingHorizontal: 25,
           }}
         >
           <TextInput
@@ -81,77 +139,45 @@ const SerialsScreen = () => {
             placeholder="Поиск"
             keyboardAppearance="dark"
             onChangeText={(text) => {
-              searchFilms(text);
+              this.searchFilms(text, page);
             }}
             keyboardType="default"
             style={{
+              marginTop: 50,
               backgroundColor: "white",
-              width: deviceWidth - 40,
-              padding: 10,
+              padding: 15,
+              fontWeight: "bold",
             }}
           ></TextInput>
         </View>
+
         <View
           style={{
-            justifyContent: "flex-start",
-            padding: 10,
             flex: 1,
-            flexDirection: "row",
-            alignContent: "sctretch",
-            backgroundColor: "#11324D",
-            flexWrap: "wrap",
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <ActivityIndicator
-            animating={loading}
-            hidesWhenStopped={true}
-            size="large"
-            style={{
-              position: "absolute",
-              marginLeft: deviceWidth * 0.5,
-              marginTop: 50,
+          <FlatList
+            style={{ backgroundColor: "#100e19" }}
+            data={this.state.data}
+            onEndReachedThreshold={0}
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefreshing}
+            onEndReached={() => {
+                this.setState({page: this.state.page + 1}, ()=>{
+                    this.searchFilms("")
+                })
             }}
+            numColumns={this.state.numColumns}
+            renderItem={this.renderItem}
+            keyExtractor={(item) => item.id}
           />
-          {data.map((item, idx) => {
-            return (
-              <TouchableOpacity
-                activeOpacity={1}
-                key={idx}
-                style={s.item}
-                onPress={() => {
-                  goWatch(item.frame);
-                }}
-              >
-                <View
-                  style={{
-                    width: deviceWidth * 0.45,
-                    padding: 5,
-                    height: deviceHeight * 0.3,
-                  }}
-                >
-                  <ImageBackground
-                    source={{ uri: item.uri }}
-                    style={{
-                      resizeMode: "cover",
-                      padding: 20,
-                      flex: 1,
-                    }}
-                    imageStyle={{ borderRadius: 6 }}
-                  >
-                    <View style={s.filmSearchText}>
-                      <Text style={{ color: "white", fontSize: 15 }}>
-                        {item.title} [{item.year}]
-                      </Text>
-                    </View>
-                  </ImageBackground>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
         </View>
-      </ScrollView>
-    </TouchableWithoutFeedback>
-  );
-};
+      </View>
+    );
+  }
+}
 
 export default SerialsScreen;

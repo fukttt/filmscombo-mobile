@@ -86,17 +86,16 @@ const stylesheet = StyleSheet.create({
       },
       filmSearchText: {
           
-          backgroundColor: '#6d23b6',
+          backgroundColor: '#100e19',
           color: 'white',
           textAlign : 'center',
           position : 'absolute',
           marginBottom : 0,
           maxWidth : deviceWidth * .4,
           padding: 8,
+          fontWeight: 'bold',
           borderBottomRightRadius: 10,
-          borderWidth: 2,
-          opacity: .85, 
-          borderColor : 'white'
+          opacity: .65, 
       }
       
     
