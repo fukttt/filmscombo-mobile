@@ -15,13 +15,18 @@ const PlayerScreen = ({ route }) => {
         <WebView
           source={{
             html: `<!doctype html>
-            <html lang="en">
+            <html lang="en" >
               <head>
                 <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta name="viewport" content="width=device-width, initial-scale=1.2">
                 <title>Hello, world!</title>
+                <style>
+                  html, body{
+                    overflow : hidden,
+                  }
+                </style>
               </head>
-              <body style="margin:0;padding:0; background-color: #100e19; height: 100vh;max-height:100%;width: 100vw">
+              <body style="margin:0;padding:0; background-color: #100e19; height: 100vh;max-height:100vh;width: 100vw;max-width:100vw,">
                ${frame}
               </body>
             </html>`,

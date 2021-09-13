@@ -19,6 +19,9 @@ const stylesheet = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold"
     },
+    filmitem: {
+      borderRadius:10
+    },
     container: {
         flex: 1,
         backgroundColor: '#100e19',
@@ -38,8 +41,6 @@ const stylesheet = StyleSheet.create({
         paddingHorizontal:20,
         color: 'white',
         fontSize: 20,
-        marginBottom: 10,
-        marginTop: 20
     },
     buttonText: {
         color: 'white'
@@ -51,16 +52,18 @@ const stylesheet = StyleSheet.create({
         backgroundColor: '#6d23b6',
         padding: 10,
         position: 'absolute',
-        borderTopRightRadius: 5,
-        borderBottomRightRadius: 22,
+        borderTopLeftRadius: 12,
+        borderBottomRightRadius: 12
     },
     filmTextRight : {   
         marginLeft: 'auto',
-        marginRight: 0,
-        backgroundColor: '#6d23b6',
+        marginRight: -1,
+        marginBottom:0,
+        marginTop: 'auto',
+        backgroundColor: 'rgb(70 ,48, 235)',
         padding: 10,
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 22,
+        borderTopLeftRadius: 12,
+        borderBottomRightRadius: 12,
     },
     video: {
         marginTop: 20,
@@ -73,7 +76,8 @@ const stylesheet = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         paddingTop: 35,
-        backgroundColor: '#100e19'
+        backgroundColor: 'black',
+        overflow: 'hidden'
       },
       loading :  {
         position: 'absolute',

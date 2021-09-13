@@ -2,154 +2,188 @@ import React from "react";
 import {
   View,
   Text,
-  Button,
-  Platform,
   ScrollView,
   SafeAreaView,
   StatusBar,
-  Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import s from "./style";
-import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
-import FilmsCarusel from "./components/filmsslider";
-import SerialsCarusel from "./components/serialsslider";
-import AnimeCarusel from "./components/animeslider";
+import MainSlider from "./components/MainSlider";
 
-import FilmsScreen from "./screens/filmsscreen";
+import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
-import AnimeScreen from "./screens/animescreen";
-import SerialsScreen from "./screens/serialsscreen";
 
+const TitleText = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        props.navigation.navigate(props.toScreen);
+      }}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+          paddingVertical: 20,
+          paddingHorizontal: 20,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Ionicons name={props.icon} size={24} color="white" />
+        <Text style={s.title}>{props.title}</Text>
+        <Ionicons
+          name="arrow-forward"
+          size={20}
+          color="white"
+          style={{ marginRight: 15 }}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
+const onSwipeLeft = (nav) => {
+  nav.navigate('films')
+}
 
-
-
-
-
-
-
-const HomeScreen = ({ navigation }) => {
-  const films = FilmsCarusel();
-  const serials = SerialsCarusel();
-  const anime = AnimeCarusel();
+const HomeScreen = (props, { navigation }) => {
+  
+  
   return (
     <SafeAreaView style={s.container}>
-      <ScrollView key="asd" style={{ flex: 1, backgroundColor: "#100e19" }}>
-        <Text style={s.title}>
-          <FontAwesome name="film" size={24} color="white" /> Фильмы
-        </Text>
-        {films}
-        <Text style={s.title}>
-          <FontAwesome name="tv" size={24} color="white" /> Сериалы
-        </Text>
-        {serials}
-        <Text style={s.title}>
-          <FontAwesome name="eercast" size={24} color="white" /> Аниме
-        </Text>
-        {anime}
+      
+      <StatusBar hidde />
+      <ScrollView key="asd" style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}>
+        <TitleText
+          icon="film"
+          title="Фильмы"
+          navigation={props.navigation}
+          toScreen="films"
+        />
+        <MainSlider api_name="movies" />
+        <TitleText
+          icon="tv"
+          title="Сериалы"
+          navigation={props.navigation}
+          toScreen="serials"
+        />
+        <MainSlider api_name="tv-series" />
+        <TitleText
+          icon="rocket"
+          title="Аниме-фильмы"
+          navigation={props.navigation}
+          toScreen="anime"
+        />
+        <MainSlider api_name="animes" />
+        <TitleText
+          icon="rose"
+          title="Аниме-сериалы"
+          navigation={props.navigation}
+          toScreen="anime-series"
+        />
+        <MainSlider api_name="anime-tv-series" />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-
-
 const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
   return (
-    
-      <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Home"
-          activeColor="#f0edf6"
-          inactiveColor="black"
-          barStyle={{ backgroundColor: '#6d23b6', paddingBottom: 10 }}
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName="Home"
+        activeColor="white"
+        inactiveColor="white"
+        barStyle={{ backgroundColor: "#1f1b2e", paddingBottom: 10 }}
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
 
-              if (route.name === "main") {
-                iconName = "film";
-              } else if (route.name === "films") {
-                iconName = "tv";
-              } else if (route.name === "watch") {
-                iconName = "play";
-              } else if (route.name === "serials") {
-                iconName = "user-secret";
-              } else if (route.name === "anime") {
-                iconName = "eercast";
-              }
-              else if (route.name === "search") {
-                iconName = "search";
-              }
+            if (route.name === "main") {
+              iconName = focused ? "film" : "film-outline";
+            } else if (route.name === "films") {
+              iconName = focused ? "tv" : "tv-outline";
+            } else if (route.name === "watch") {
+              iconName = focused ? "play" : "play-outline";
+            } else if (route.name === "serials") {
+              iconName = focused ? "people-circle" : "people-circle-outline";
+            } else if (route.name === "anime") {
+              iconName = focused ? "rocket" : "rocket-outline";
+            } else if (route.name === "anime-series") {
+              iconName = focused ? "contrast" : "contrast-outline";
+            } else if (route.name === "search") {
+              iconName = "search";
+            }
 
-              // You can return any component that you like here!
-              return <FontAwesome name={iconName} size={16} color={color} />;
-            },
-            
-            tabBarActiveTintColor: "#6d23b6",
-            tabBarInactiveTintColor: "white",
-          })}
-        >
-          <Tab.Screen
-            name="main"
-            options={{
-              title: "Главная",
-              headerTintColor: "#fff",
-              headerShown: false,
-            }}
-            component={HomeScreen}
-          />
-          <Tab.Screen
-            name="films"
-            options={{
-              title: "Фильмы",
-              headerTintColor: "#fff",
-              headerStyle: {
-                backgroundColor: "#610094",
-              },
-            }}
-            component={FilmsScreen}
-          />
-          <Tab.Screen
-            name="serials"
-            options={{
-              title: "Сериалы",
-              headerTintColor: "#fff",
-              headerStyle: {
-                backgroundColor: "#610094",
-              },
-            }}
-            component={SerialsScreen}
-          />
-          <Tab.Screen
-            name="anime"
-            options={{
-              title: "Аниме",
-              headerTintColor: "#fff",
-              headerStyle: {
-                backgroundColor: "#610094",
-              },
-            }}
-            component={AnimeScreen}
-          />
-          <Tab.Screen
-            name="watch"
-            options={{
-              title: "Плеер",
-              headerTintColor: "#fff",
-              headerStyle: {
-                backgroundColor: "#6d23b6",
-              },
-            }}
-            component={PlayerScreen}
-            initialParams={{ frame: '' }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={23} color={color} />;
+          },
+          tabBarActiveTintColor: "red",
+          tabBarInactiveTintColor: "",
+        })}
+      >
+        <Tab.Screen
+          name="main"
+          options={{
+            title: "Главная",
+            headerTintColor: "#fff",
+            headerShown: false,
+          }}
+          component={HomeScreen}
+        />
+        <Tab.Screen
+          name="films"
+          options={{
+            title: "Фильмы",
+            headerTintColor: "#fff",
+          }}
+          component={AllFlatScreens}
+          initialParams={{ typescreen: "movies" }}
+        />
+        <Tab.Screen
+          name="serials"
+          options={{
+            title: "Сериалы",
+            headerTintColor: "#fff",
+          }}
+          component={AllFlatScreens}
+          initialParams={{ typescreen: "tv-series" }}
+        />
+        <Tab.Screen
+          name="anime"
+          options={{
+            title: "Аниме",
+            headerTintColor: "#fff",
+          }}
+          component={AllFlatScreens}
+          initialParams={{ typescreen: "animes" }}
+        />
+        <Tab.Screen
+          name="anime-series"
+          options={{
+            title: "Аниме",
+            headerTintColor: "#fff",
+          }}
+          component={AllFlatScreens}
+          initialParams={{ typescreen: "anime-tv-series" }}
+        />
+        <Tab.Screen
+          name="watch"
+          options={{
+            title: "Плеер",
+            headerTintColor: "#fff",
+          }}
+          component={PlayerScreen}
+          initialParams={{ frame: "" }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }

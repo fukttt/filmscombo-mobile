@@ -14,6 +14,7 @@
     "@types/react-native-snap-carousel": "^3.8.4",
     "axios": "^0.21.4",
     "expo": "^42.0.0",
+    "expo-font": "~9.2.1",
     "expo-status-bar": "~1.0.4",
     "fs": "^0.0.1-security",
     "react": "16.13.1",
@@ -26,6 +27,7 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-snap-carousel": "^3.9.1",
+    "react-native-swipe-gestures": "^1.0.5",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.13.0"

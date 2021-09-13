@@ -21,10 +21,12 @@ import { render } from "react-dom";
 
 
 
-class SerialScreen extends Component {
+class AllFlatItems extends Component {
+  
     constructor (props){
         super(props);
         this.state = {
+            routeparams: props.route.params,
             data: [],
             deviceHeight : 0,
             deviceWidth : 0,
@@ -44,12 +46,13 @@ class SerialScreen extends Component {
 
 
   searchFilms (text, search = false, type) {
+    this.setState({loading : true})
     var url = "";
     if (search == true){
-        url = "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&query=" +
+        url = "https://videocdn.tv/api/"+this.state.routeparams.typescreen+"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&query=" +
         text 
     }else {
-        url = "https://videocdn.tv/api/tv-series?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&page=" +
+        url = "https://videocdn.tv/api/"+this.state.routeparams.typescreen+"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&page=" +
         this.state.page
     }
     return fetch(url)
@@ -57,6 +60,7 @@ class SerialScreen extends Component {
       .then((json) => {
         var data1 = [];
         json.data.forEach((entry) => {
+
           data1.push({
             id: entry.id,
             uri:
@@ -64,7 +68,7 @@ class SerialScreen extends Component {
               entry.kinopoisk_id +
               ".jpg",
             title: entry.ru_title,
-            year: entry.start_date.split("-")[0],
+            year: (this.state.routeparams.typescreen.includes("tv-series")) ? entry.start_date.split("-")[0] : entry.year.split("-")[0],
             frame: entry.iframe,
           });
         });
@@ -75,7 +79,8 @@ class SerialScreen extends Component {
             //alert(type)
             this.setState({data: this.state.data.concat(data1), refreshing : false})
         }
-        
+
+        this.setState({loading : false})
       })
       .catch((error) => {
         alert(error)
@@ -89,7 +94,6 @@ class SerialScreen extends Component {
     
 
   render() {
-      
     return (
       <View
         onPress={Keyboard.dismiss}
@@ -128,6 +132,7 @@ class SerialScreen extends Component {
             alignItems: "center",
           }}
         >
+          <ActivityIndicator size="large" color="rgb(70 ,48, 235)" style={{position: 'absolute'}} hidesWhenStopped={true} animating={this.state.loading} />
           <FlatList
             style={{ backgroundColor: "#100e19" }}
             data={this.state.data}
@@ -159,6 +164,7 @@ class SerialScreen extends Component {
                         style={{
                           width: Dimensions.get('window').width * 0.45,
                           padding: 5,
+                          
                           height: Dimensions.get('window').height * 0.3,
                         }}
                       >
@@ -166,13 +172,15 @@ class SerialScreen extends Component {
                           source={{ uri: item.uri }}
                           style={{
                             resizeMode: "stretch",
+                            backgroundColor : '#1f1b2e',
+                            borderRadius: 12,
                             flex: 1,
                           }}
-                          imageStyle={{ borderRadius: 6 }}
+                          imageStyle={{ borderRadius: 12 }}
                         >
                           <View style={s.filmSearchText}>
-                            <Text style={{ color: "white", fontSize: 15 }}>
-                              {item.title} [{item.year}]
+                            <Text style={{ color: "white", fontSize: 15, fontWeight: 'bold' }}>
+                              {item.title.substr(0, 10) + '...'} {item.year}
                             </Text>
                           </View>
                         </ImageBackground>
@@ -188,4 +196,4 @@ class SerialScreen extends Component {
   }
 }
 
-export default SerialScreen;
+export default AllFlatItems;

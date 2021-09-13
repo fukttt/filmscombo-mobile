@@ -1,29 +1,28 @@
 import React, { useEffect, useState} from 'react';
 import s from '../style'
-import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, Dimensions, Animated, ImageBackground, TouchableOpacity} from 'react-native';
+import { View, Text, ScrollView, SafeAreaView,  Dimensions, Animated,ActivityIndicator, ImageBackground, TouchableOpacity, FlatList} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-
-const OFFSET = 40
-const ITEM_WIDTH = Dimensions.get("window").width -50
-const ITEM_HEIGHT = 240
-
+const OFFSET = 20
+const ITEM_WIDTH = Dimensions.get("window").width*.4
+const ITEM_HEIGHT = Dimensions.get("window").height*.3
 
 
-export default function AnimeCarousel (){
+const SerialsCarousel = (props) => {
+
   const scrollX = React.useRef(new Animated.Value(0)).current
   const [data, setData] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const getMoviesFromApi = () => {
-    return fetch('https://videocdn.tv/api/animes?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=10')
+    return fetch('https://videocdn.tv/api/'+props.api_name+'?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&limit=20&direction=desc')
       .then((response) => response.json())
       .then((json) => {
         var data = [];
-        json.data.forEach((entry)=>{
-            data.push({"uri" : 'http://st.kp.yandex.net/images/film_iphone/iphone360_'+entry.kinopoisk_id + '.jpg', "title" : entry.ru_title, "year" : entry.year.split('-')[0], "frame" : entry.iframe})
+        json.data.forEach((entry, id )=>{
+            data.push({"id" : id, "uri" : 'http://st.kp.yandex.net/images/film_iphone/iphone360_'+entry.kinopoisk_id + '.jpg', "title" : entry.ru_title, "year" : (props.api_name.includes("tv-series")) ? entry.start_date.split('-')[0] : entry.year.split('-')[0], "frame" : entry.iframe})
         })
-        
         setLoading(false)
         setData(data)
 
@@ -32,20 +31,25 @@ export default function AnimeCarousel (){
         console.error(error);
       });
   };
+
   const navigation = useNavigation();
   function goWatch(frame) {
     var p = frame.toString().replace('\\', '').replace('//', 'https://').replace('640', '100%').replace('480', '100%')
     navigation.navigate('watch', {frame : p})
   } 
 
+  const render = (item, idx) => {
+
+
+    
+  }
   useEffect(() => {
     getMoviesFromApi();
   }, []);
 
 
   return (
-    
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#100e19" }}>
+    <View style={{ backgroundColor: "#100e19", paddingHorizontal: 20}}>
       <View style={s.loading}>
       <ActivityIndicator
         animating={loading}
@@ -53,54 +57,50 @@ export default function AnimeCarousel (){
         size="large"
       />
       </View>
-      <ScrollView
+      <Animated.FlatList
+        data={data}
+        keyExtractor={(item => item.id)}
         horizontal={true}
-        decelerationRate={"normal"}
+        decelerationRate={"fast"}
         snapToInterval={ITEM_WIDTH}
-        style={{ marginTop: 10, paddingHorizontal: 15}}
+        pagingEnabled
         showsHorizontalScrollIndicator={false}
         bounces={false}
         disableIntervalMomentum
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={12}
-      >
-        
-        {data.map((item, idx) => {
+        renderItem={({item})=>{
+
           const inputRange = [
-            (idx - 1) * ITEM_WIDTH,
-            idx * ITEM_WIDTH,
-            (idx + 1) * ITEM_WIDTH,
+            (item.id - 1) * ITEM_WIDTH,
+            item.id * ITEM_WIDTH,
+            (item.id + 1) * ITEM_WIDTH,
           ]
 
           const translate = scrollX.interpolate({
             inputRange,
-            outputRange: [0.85, 1, 0.85],
+            outputRange: [0.8, 1, 0.8],
           })
 
           const opacity = scrollX.interpolate({
             inputRange,
-            outputRange: [0.5, 1, 0.5],
+            outputRange: [0.8, 1, 0.8],
           })
-
           return (
             <TouchableOpacity
-            activeOpacity={1}
-            key={idx}
-            style={s.item}
+            key={item.id}
             onPress={() => {
               goWatch(item.frame)
             }}>
             <Animated.View
-              key={idx}
+              key={item.id}
               style={{
                 width: ITEM_WIDTH,
                 height: ITEM_HEIGHT,
+                backgroundColor : '#1f1b2e',
+                borderRadius: 12,
                 marginLeft: 0,
-                marginRight: idx === data.length - 1 ? OFFSET : undefined,
+                marginRight: item.id === data.length - 1 ? OFFSET : undefined,
                 opacity: opacity,
+                overflow: 'hidden',
                 transform: [{ scale: translate }],
               }}
             >
@@ -109,13 +109,11 @@ export default function AnimeCarousel (){
                 source={{uri : item.uri}}
                 style={{
                   flex: 1,
-                  resizeMode: "stretch",
-                  justifyContent: "flex-start",
                 }}
-                imageStyle={{ borderRadius: 6}}
+                imageStyle={{borderRadius: 12}}
               >
                 <View style={s.filmText}>
-                <Text style={{color: 'white'}}>{item.title}</Text>
+                <Text style={{color: 'white', fontWeight: 'bold'}}>{item.title.substr(0, 10) + '...'}</Text>
                 </View>
                 <View style={s.filmTextRight}>
                 <Text style={{color: 'white'}}>{item.year}</Text>
@@ -127,8 +125,19 @@ export default function AnimeCarousel (){
             </Animated.View>
             </TouchableOpacity>
           )
+        }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={12}
+      >
+        {data.map((item, idx) => {
+          
         })}
-      </ScrollView>
-    </SafeAreaView>
+      </Animated.FlatList>
+    </View>
   )
 }
+
+export default SerialsCarousel;
