@@ -1,20 +1,21 @@
 import React from "react";
-import {View, Dimensions} from 'react-native';
+import { View, Dimensions, Text } from "react-native";
 import s from "../style";
+import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-
 const PlayerScreen = ({ route }) => {
-    const { frame } = route.params;
+	const { frame } = route.params;
 
-    return (
-      <View style={s.containerd}>
-        <WebView
-          source={{
-            html: `<!doctype html>
+	return (
+		<View style={s.containerd}>
+			{frame ? (
+				<WebView
+					source={{
+						html: `<!doctype html>
             <html lang="en" >
               <head>
                 <meta charset="utf-8">
@@ -30,24 +31,43 @@ const PlayerScreen = ({ route }) => {
                ${frame}
               </body>
             </html>`,
-          }}
-          mixedContentMode="always"
-          
-          originWhitelist={["*svetacdn*"]}
-          mediaPlaybackRequiresUserAction={true}
-          androidLayerType="hardware"
-          domStorageEnabled={true}
-          style={{
-            
-            flex: 1,
-            width: deviceWidth,
-            alignSelf: "center",
-            alignContent: "center",
-          }}
-          javaScriptEnabled={true}
-        />
-      </View>
-    );
-  };
+					}}
+					mixedContentMode="always"
+					originWhitelist={["*svetacdn*"]}
+					mediaPlaybackRequiresUserAction={true}
+					androidLayerType="hardware"
+					domStorageEnabled={true}
+					style={{
+						flex: 1,
+						width: deviceWidth,
+						alignSelf: "center",
+						alignContent: "center",
+					}}
+					javaScriptEnabled={true}
+				/>
+			) : (
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "center",
+						flexDirection: "column",
+					}}
+				>
+					<View
+						style={{
+							alignItems: "center",
+						}}
+					>
+						<Ionicons name={"alert-circle"} size={48} color="white" />
+						<Text style={{ color: "white", marginTop: 10, fontSize: 20 }}>
+							{" "}
+							Для начала, выбери фильм.
+						</Text>
+					</View>
+				</View>
+			)}
+		</View>
+	);
+};
 
-  export default PlayerScreen;
+export default PlayerScreen;

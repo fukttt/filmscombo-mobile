@@ -16,12 +16,13 @@ import MainSlider from "./components/MainSlider";
 
 import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
+import NewsScreen from "./screens/NewsScreen";
 
 const TitleText = (props) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        props.navigation.navigate(props.toScreen);
+        props.navigation.navigate("search", { typescreen: "animes" });
       }}
     >
       <View
@@ -48,17 +49,17 @@ const TitleText = (props) => {
 };
 
 const onSwipeLeft = (nav) => {
-  nav.navigate('films')
-}
+  nav.navigate("films");
+};
 
 const HomeScreen = (props, { navigation }) => {
-  
-  
   return (
     <SafeAreaView style={s.container}>
-      
       <StatusBar hidde />
-      <ScrollView key="asd" style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}>
+      <ScrollView
+        key="asd"
+        style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}
+      >
         <TitleText
           icon="film"
           title="Фильмы"
@@ -100,8 +101,8 @@ export default function App() {
       <Tab.Navigator
         initialRouteName="Home"
         activeColor="white"
-        inactiveColor="white"
-        barStyle={{ backgroundColor: "#1f1b2e", paddingBottom: 10 }}
+        inactiveColor="gray"
+        barStyle={{ backgroundColor: "#1f1b2e", paddingBottom: 2 }}
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -119,7 +120,9 @@ export default function App() {
             } else if (route.name === "anime-series") {
               iconName = focused ? "contrast" : "contrast-outline";
             } else if (route.name === "search") {
-              iconName = "search";
+              iconName = focused ? "search" : "search";
+            } else if (route.name === "news") {
+              iconName = focused ? "newspaper" : "newspaper-outline";
             }
 
             // You can return any component that you like here!
@@ -139,40 +142,13 @@ export default function App() {
           component={HomeScreen}
         />
         <Tab.Screen
-          name="films"
+          name="search"
           options={{
-            title: "Фильмы",
+            title: "Поиск",
             headerTintColor: "#fff",
           }}
           component={AllFlatScreens}
           initialParams={{ typescreen: "movies" }}
-        />
-        <Tab.Screen
-          name="serials"
-          options={{
-            title: "Сериалы",
-            headerTintColor: "#fff",
-          }}
-          component={AllFlatScreens}
-          initialParams={{ typescreen: "tv-series" }}
-        />
-        <Tab.Screen
-          name="anime"
-          options={{
-            title: "Аниме",
-            headerTintColor: "#fff",
-          }}
-          component={AllFlatScreens}
-          initialParams={{ typescreen: "animes" }}
-        />
-        <Tab.Screen
-          name="anime-series"
-          options={{
-            title: "Аниме",
-            headerTintColor: "#fff",
-          }}
-          component={AllFlatScreens}
-          initialParams={{ typescreen: "anime-tv-series" }}
         />
         <Tab.Screen
           name="watch"
@@ -181,6 +157,15 @@ export default function App() {
             headerTintColor: "#fff",
           }}
           component={PlayerScreen}
+          initialParams={{ frame: "" }}
+        />
+        <Tab.Screen
+          name="news"
+          options={{
+            title: "Новости",
+            headerTintColor: "#fff",
+          }}
+          component={NewsScreen}
           initialParams={{ frame: "" }}
         />
       </Tab.Navigator>
