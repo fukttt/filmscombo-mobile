@@ -44,6 +44,7 @@ const PlayerScreen = ({ route }) => {
 						alignContent: "center",
 					}}
 					javaScriptEnabled={true}
+					allowsFullscreenVideo={true}
 				/>
 			) : (
 				<View
