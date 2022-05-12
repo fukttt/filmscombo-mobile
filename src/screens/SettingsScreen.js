@@ -27,19 +27,12 @@ const News = () => {
 	const [data, setData] = useState();
 	useEffect(() => {
 		fetch(
-			"https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/news.js"
+			"https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/news.json"
 		)
 			.then((response) => response.json())
 			.then((json) => {
-				if (semver.gte(json.expo.version, expo.version)) {
-					setmodalVisible(true);
-					setModalText(
-						"Юхууу!\nДоступна новая версия приложения - " +
-							json.expo.version +
-							"!\nУстановленная на данный момент - " +
-							expo.version
-					);
-				}
+				setData(json);
+				alert(json.length);
 			})
 			.catch((error) => {
 				alert(error);
@@ -55,7 +48,7 @@ const News = () => {
 
 				backgroundColor: "#100e19",
 			}}
-			data={news}
+			data={data}
 			renderItem={({ item }) => (
 				<View
 					style={{
