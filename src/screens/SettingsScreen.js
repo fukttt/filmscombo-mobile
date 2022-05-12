@@ -13,7 +13,6 @@ import {
 import { expo } from "../../app.json";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import news from "../../news";
 const copy = `# h1 Heading 8-)
  
 **This is some bold text!**
@@ -24,15 +23,25 @@ This is normal text
 const Tab = createMaterialTopTabNavigator();
 
 const News = () => {
-	const [data, setData] = useState();
+	const [data, setData] = useState([]);
+
+	var myHeaders = new Headers();
+	myHeaders.append("pragma", "no-cache");
+	myHeaders.append("cache-control", "no-cache");
+
+	var myInit = {
+		method: "GET",
+		headers: myHeaders,
+	};
+
 	useEffect(() => {
 		fetch(
-			"https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/news.json"
+			"https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/news.json",
+			myInit
 		)
 			.then((response) => response.json())
 			.then((json) => {
 				setData(json);
-				alert(json.length);
 			})
 			.catch((error) => {
 				alert(error);
