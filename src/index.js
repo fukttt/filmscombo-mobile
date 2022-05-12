@@ -67,7 +67,7 @@ const HomeScreen = (props, { navigation }) => {
       )
          .then((response) => response.json())
          .then((json) => {
-            if (semver.gte(json.expo.version, expo.version)) {
+            if (semver.gt(json.expo.version, expo.version)) {
                setmodalVisible(true);
                setModalText(
                   "Юхууу!\nДоступна новая версия приложения - " +

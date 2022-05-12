@@ -27,11 +27,12 @@ const News = () => {
 
 	var myHeaders = new Headers();
 	myHeaders.append("pragma", "no-cache");
-	myHeaders.append("cache-control", "no-cache");
+	myHeaders.append("Cache-Control", "no-cache");
 
 	var myInit = {
 		method: "GET",
 		headers: myHeaders,
+		cache: "no-cache",
 	};
 
 	useEffect(() => {
@@ -108,6 +109,31 @@ const News = () => {
 };
 
 const Settings = () => {
+	const [actual, setactual] = useState();
+
+	var myHeaders = new Headers();
+	myHeaders.append("pragma", "no-cache");
+	myHeaders.append("Cache-Control", "no-cache");
+
+	var myInit = {
+		method: "GET",
+		headers: myHeaders,
+		cache: "no-cache",
+	};
+
+	useEffect(() => {
+		fetch(
+			"https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json",
+			myInit
+		)
+			.then((response) => response.json())
+			.then((json) => {
+				setactual(json.expo.version);
+			})
+			.catch((error) => {
+				alert(error);
+			});
+	}, []);
 	return (
 		<View
 			style={{
@@ -117,13 +143,16 @@ const Settings = () => {
 				paddingHorizontal: 10,
 			}}
 		>
-			<Text style={{ color: "#fff", fontSize: 15 }}>
+			<Text style={{ color: "#fff", fontSize: 18 }}>
 				Версия приложения: {expo.version}
+			</Text>
+			<Text style={{ color: "#fff", fontSize: 18, marginTop: 5 }}>
+				Актуальная версия: {actual || "N/A"}
 			</Text>
 			<View
 				style={{
-					bottom: 5,
-					right: 10,
+					bottom: 10,
+					right: 15,
 					position: "absolute",
 					flex: 1,
 					flexDirection: "row",
