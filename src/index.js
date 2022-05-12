@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
    View,
    Text,
+   Pressable,
+   Modal,
+   Linking,
    ScrollView,
    SafeAreaView,
    StatusBar,
@@ -16,7 +19,7 @@ import MainSlider from "./components/MainSlider";
 
 import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
-import NewsScreen from "./screens/NewsScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 import { expo } from "../app.json";
 
 const TitleText = (props) => {
@@ -54,9 +57,117 @@ const onSwipeLeft = (nav) => {
 };
 
 const HomeScreen = (props, { navigation }) => {
+   const [modalVisible, setmodalVisible] = useState();
+   const [modalText, setModalText] = useState();
+   useEffect(() => {
+      //
+      var semver = require("semver");
+      fetch(
+         "https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json"
+      )
+         .then((response) => response.json())
+         .then((json) => {
+            if (semver.gte(json.expo.version, expo.version)) {
+               setmodalVisible(true);
+               setModalText(
+                  "Юхууу!\nДоступна новая версия приложения - " +
+                     json.expo.version +
+                     "!\nУстановленная на данный момент - " +
+                     expo.version
+               );
+            }
+         })
+         .catch((error) => {
+            alert(error);
+         });
+   }, []);
+
    return (
       <SafeAreaView style={s.container}>
          <StatusBar hidde />
+         <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+               setModalVisible(!modalVisible);
+            }}
+         >
+            <View
+               style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#BBBBBE",
+               }}
+            >
+               <Text
+                  style={{
+                     fontWeight: "bold",
+                     textAlign: "center",
+                     fontSize: 18,
+                  }}
+               >
+                  {modalText}
+               </Text>
+               <View
+                  style={{
+                     flex: 1 / 6,
+                     padding: 10,
+                     alignItems: "center",
+                     justifyContent: "center",
+                     flexDirection: "row",
+                     flexWrap: "wrap",
+                  }}
+               >
+                  <Pressable
+                     style={{
+                        borderRadius: 10,
+                        padding: 15,
+                        elevation: 2,
+                        backgroundColor: "#673147",
+                     }}
+                     onPress={() => {
+                        Linking.openURL(
+                           "https://github.com/fukttt/filmscombo-mobile/releases"
+                        );
+                     }}
+                  >
+                     <Text
+                        style={{
+                           textAlign: "center",
+                           color: "#fff",
+                        }}
+                     >
+                        <Ionicons
+                           name="cloud-download-outline"
+                           size={15}
+                           color="#fff"
+                        />{" "}
+                        Скачать
+                     </Text>
+                  </Pressable>
+                  <Pressable
+                     style={{
+                        marginLeft: 5,
+                        borderRadius: 10,
+                        padding: 15,
+                        elevation: 2,
+                        backgroundColor: "#100e19",
+                     }}
+                     onPress={() => setmodalVisible(false)}
+                  >
+                     <Text
+                        style={{
+                           color: "#fff",
+                        }}
+                     >
+                        <Ionicons name="close" size={15} color="#fff" /> Закрыть
+                     </Text>
+                  </Pressable>
+               </View>
+            </View>
+         </Modal>
          <ScrollView
             key="asd"
             style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}
@@ -97,22 +208,6 @@ const HomeScreen = (props, { navigation }) => {
 const Tab = createMaterialBottomTabNavigator();
 
 export default function App() {
-   useEffect(() => {
-      //
-      var semver = require("semver");
-      fetch(
-         "https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json"
-      )
-         .then((response) => response.json())
-         .then((json) => {
-            if (semver.gte(json.expo.version, expo.version)) {
-               alert("New version is available!");
-            }
-         })
-         .catch((error) => {
-            alert(error);
-         });
-   }, []);
    return (
       <NavigationContainer>
          <Tab.Navigator
@@ -140,8 +235,8 @@ export default function App() {
                      iconName = focused ? "contrast" : "contrast-outline";
                   } else if (route.name === "search") {
                      iconName = focused ? "search" : "search";
-                  } else if (route.name === "news") {
-                     iconName = focused ? "newspaper" : "newspaper-outline";
+                  } else if (route.name === "settings") {
+                     iconName = focused ? "settings" : "settings-outline";
                   }
 
                   // You can return any component that you like here!
@@ -160,6 +255,7 @@ export default function App() {
                }}
                component={HomeScreen}
             />
+
             <Tab.Screen
                name="search"
                options={{
@@ -179,12 +275,12 @@ export default function App() {
                initialParams={{ frame: "" }}
             />
             <Tab.Screen
-               name="news"
+               name="settings"
                options={{
-                  title: "Новости",
+                  title: "Настройки",
                   headerTintColor: "#fff",
                }}
-               component={NewsScreen}
+               component={SettingsScreen}
                initialParams={{ frame: "" }}
             />
          </Tab.Navigator>
