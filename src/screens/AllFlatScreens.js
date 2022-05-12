@@ -6,6 +6,7 @@ import {
 	ActivityIndicator,
 	TextInput,
 	FlatList,
+	Platform,
 	StyleSheet,
 	Pressable,
 	TouchableOpacity,
@@ -21,6 +22,8 @@ import { ImageBackground } from "react-native";
 import s from "../style";
 import { useNavigation } from "@react-navigation/native";
 import { render } from "react-dom";
+
+const ios = Platform.OS === "ios";
 
 const btns = [
 	{
@@ -146,12 +149,12 @@ class AllFlatItems extends Component {
 						}}
 						keyboardType="default"
 						style={{
-							marginTop: 50,
+							marginTop: ios ? 50 : 10,
 							borderWidth: 2,
 							borderRadius: 10,
 							color: "#7f8fa6",
 							borderColor: "#718093",
-							padding: 15,
+							padding: ios ? 15 : 10,
 							fontWeight: "bold",
 						}}
 					></TextInput>

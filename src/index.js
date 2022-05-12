@@ -57,8 +57,10 @@ const onSwipeLeft = (nav) => {
 };
 
 const HomeScreen = (props, { navigation }) => {
-   const [modalVisible, setmodalVisible] = useState();
-   const [modalText, setModalText] = useState();
+   const [modalVisible, setmodalVisible] = useState(false);
+   const [modalText, setModalText] = useState(
+      "Текст внутри.\nВозможно произошел какой-то сбой, сообщи разработчику об этом !"
+   );
    useEffect(() => {
       //
       var semver = require("semver");
