@@ -13,7 +13,6 @@ import {
    FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { MMKV } from "react-native-mmkv";
 
 const OFFSET = 20;
 const ITEM_WIDTH = Dimensions.get("window").width * 0.4;
