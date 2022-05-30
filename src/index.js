@@ -23,6 +23,7 @@ import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { expo } from "../app.json";
+import * as Analytics from "expo-firebase-analytics";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -85,7 +86,7 @@ const HomeScreen = (props, { navigation }) => {
       console.log("Done.");
    };
    useEffect(() => {
-      //clearAll();
+      // clearAll();
       var semver = require("semver");
       fetch(
          "https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json"
@@ -105,6 +106,7 @@ const HomeScreen = (props, { navigation }) => {
          .catch((error) => {
             alert(error);
          });
+      Analytics.logEvent("screen_view", "Home").then(() => {});
    }, []);
 
    return (
@@ -197,13 +199,6 @@ const HomeScreen = (props, { navigation }) => {
             key="asd"
             style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}
          >
-            <TitleText
-               icon="film"
-               title="Просмотренное"
-               navigation={props.navigation}
-               toScreen="films"
-            />
-            <RecentlyCarosel />
             <TitleText
                icon="film"
                title="Фильмы"

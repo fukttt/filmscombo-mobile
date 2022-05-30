@@ -70,7 +70,7 @@ const RecentlyCarosel = (props) => {
          </View>
          <Animated.FlatList
             data={stored}
-            keyExtractor={(item, index) => item.id + index}
+            keyExtractor={(item) => item.date}
             horizontal={true}
             decelerationRate={"fast"}
             snapToInterval={ITEM_WIDTH}
@@ -98,7 +98,7 @@ const RecentlyCarosel = (props) => {
                   <TouchableOpacity
                      key={item.id}
                      onPress={() => {
-                        goWatch(item.frame);
+                        console.log("AYE" + stored.length + " | " + item);
                         storeData([
                            {
                               title: item.title,
@@ -108,6 +108,7 @@ const RecentlyCarosel = (props) => {
                            },
                            ...stored,
                         ]);
+                        goWatch(item.frame);
                      }}
                   >
                      <Animated.View

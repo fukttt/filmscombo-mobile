@@ -13,9 +13,7 @@ import {
    FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage, {
-   useAsyncStorage,
-} from "@react-native-async-storage/async-storage";
+import { MMKV } from "react-native-mmkv";
 
 const OFFSET = 20;
 const ITEM_WIDTH = Dimensions.get("window").width * 0.4;
@@ -72,25 +70,6 @@ const SerialsCarousel = (props) => {
       getMoviesFromApi();
    }, []);
 
-   const storeData = async (value) => {
-      try {
-         const jsonValue = JSON.stringify(value);
-         await AsyncStorage.setItem("@movies", jsonValue);
-      } catch (e) {
-         // saving error
-      }
-   };
-
-   const getData = async () => {
-      try {
-         const jsonValue = await AsyncStorage.getItem("@movies");
-         console.log(jsonValue);
-         setStored(jsonValue != [] ? JSON.parse(jsonValue) : []);
-      } catch (e) {
-         // error reading value
-      }
-   };
-
    return (
       <View style={{ backgroundColor: "#100e19", paddingHorizontal: 20 }}>
          <View style={s.loading}>
@@ -131,17 +110,6 @@ const SerialsCarousel = (props) => {
                      key={item.id}
                      onPress={() => {
                         goWatch(item.frame);
-                        storeData([
-                           {
-                              id: item.id,
-                              title: item.title,
-                              uri: item.uri,
-                              frame: item.frame,
-                              year: item.year,
-                              date: Date.now(),
-                           },
-                           ...stored,
-                        ]);
                      }}
                   >
                      <Animated.View
