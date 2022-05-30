@@ -9,6 +9,7 @@ import {
    SafeAreaView,
    StatusBar,
    TouchableOpacity,
+   Dimensions,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -16,11 +17,14 @@ import s from "./style";
 import { Ionicons } from "@expo/vector-icons";
 
 import MainSlider from "./components/MainSlider";
+import RecentlyCarosel from "./components/RecentlyFilms";
 
 import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import { expo } from "../app.json";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TitleText = (props) => {
    return (
@@ -56,13 +60,32 @@ const onSwipeLeft = (nav) => {
    nav.navigate("films");
 };
 
+const isPortrait = () => {
+   const dim = Dimensions.get("screen");
+   return dim.height >= dim.width;
+};
+
 const HomeScreen = (props, { navigation }) => {
+   Dimensions.addEventListener("change", () => {
+      setprot(isPortrait() ? true : false);
+   });
+   const [prot, setprot] = useState(isPortrait() ? true : false);
    const [modalVisible, setmodalVisible] = useState(false);
    const [modalText, setModalText] = useState(
       "Текст внутри.\nВозможно произошел какой-то сбой, сообщи разработчику об этом !"
    );
+
+   clearAll = async () => {
+      try {
+         await AsyncStorage.clear();
+      } catch (e) {
+         // clear error
+      }
+
+      console.log("Done.");
+   };
    useEffect(() => {
-      //
+      //clearAll();
       var semver = require("semver");
       fetch(
          "https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json"
@@ -176,11 +199,18 @@ const HomeScreen = (props, { navigation }) => {
          >
             <TitleText
                icon="film"
+               title="Просмотренное"
+               navigation={props.navigation}
+               toScreen="films"
+            />
+            <RecentlyCarosel />
+            <TitleText
+               icon="film"
                title="Фильмы"
                navigation={props.navigation}
                toScreen="films"
             />
-            <MainSlider api_name="movies" />
+            <MainSlider api_name="movies" port={prot} />
             <TitleText
                icon="tv"
                title="Сериалы"
@@ -216,7 +246,7 @@ export default function App() {
             initialRouteName="Home"
             activeColor="white"
             inactiveColor="gray"
-            barStyle={{ backgroundColor: "#1f1b2e", paddingBottom: 2 }}
+            barStyle={{ backgroundColor: "#1f1b2e" }}
             screenOptions={({ route }) => ({
                tabBarIcon: ({ focused, color, size }) => {
                   let iconName;
@@ -253,7 +283,6 @@ export default function App() {
                options={{
                   title: "Главная",
                   headerTintColor: "#fff",
-                  headerShown: false,
                }}
                component={HomeScreen}
             />

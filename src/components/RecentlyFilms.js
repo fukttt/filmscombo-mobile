@@ -13,49 +13,17 @@ import {
    FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage, {
-   useAsyncStorage,
-} from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const OFFSET = 20;
 const ITEM_WIDTH = Dimensions.get("window").width * 0.4;
 const ITEM_HEIGHT = Dimensions.get("window").height * 0.3;
 
-const SerialsCarousel = (props) => {
+const RecentlyCarosel = (props) => {
    const scrollX = React.useRef(new Animated.Value(0)).current;
    const [data, setData] = useState([]);
-   const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(false);
    const [stored, setStored] = useState([]);
-   const getMoviesFromApi = () => {
-      return fetch(
-         "https://videocdn.tv/api/" +
-            props.api_name +
-            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=idw&limit=20&direction=desc"
-      )
-         .then((response) => response.json())
-         .then((json) => {
-            var data = [];
-            json.data.forEach((entry, id) => {
-               data.push({
-                  id: id,
-                  uri:
-                     "http://st.kp.yandex.net/images/film_iphone/iphone360_" +
-                     entry.kinopoisk_id +
-                     ".jpg",
-                  title: entry.ru_title,
-                  year: props.api_name.includes("tv-series")
-                     ? entry.start_date.split("-")[0]
-                     : entry.year.split("-")[0],
-                  frame: entry.iframe,
-               });
-            });
-            setLoading(false);
-            setData(data);
-         })
-         .catch((error) => {
-            console.error(error);
-         });
-   };
 
    const navigation = useNavigation();
    function goWatch(frame) {
@@ -69,7 +37,7 @@ const SerialsCarousel = (props) => {
    }
 
    useEffect(() => {
-      getMoviesFromApi();
+      getData();
    }, []);
 
    const storeData = async (value) => {
@@ -84,8 +52,7 @@ const SerialsCarousel = (props) => {
    const getData = async () => {
       try {
          const jsonValue = await AsyncStorage.getItem("@movies");
-         console.log(jsonValue);
-         setStored(jsonValue != [] ? JSON.parse(jsonValue) : []);
+         setStored(jsonValue != null ? JSON.parse(jsonValue) : []);
       } catch (e) {
          // error reading value
       }
@@ -93,6 +60,7 @@ const SerialsCarousel = (props) => {
 
    return (
       <View style={{ backgroundColor: "#100e19", paddingHorizontal: 20 }}>
+         <Text style={{ color: "#fff" }}>{stored.length}</Text>
          <View style={s.loading}>
             <ActivityIndicator
                animating={loading}
@@ -101,8 +69,8 @@ const SerialsCarousel = (props) => {
             />
          </View>
          <Animated.FlatList
-            data={data}
-            keyExtractor={(item) => item.id}
+            data={stored}
+            keyExtractor={(item, index) => item.id + index}
             horizontal={true}
             decelerationRate={"fast"}
             snapToInterval={ITEM_WIDTH}
@@ -133,11 +101,9 @@ const SerialsCarousel = (props) => {
                         goWatch(item.frame);
                         storeData([
                            {
-                              id: item.id,
                               title: item.title,
                               uri: item.uri,
                               frame: item.frame,
-                              year: item.year,
                               date: Date.now(),
                            },
                            ...stored,
@@ -145,7 +111,6 @@ const SerialsCarousel = (props) => {
                      }}
                   >
                      <Animated.View
-                        key={item.id}
                         style={{
                            width: ITEM_WIDTH,
                            height: ITEM_HEIGHT,
@@ -193,4 +158,4 @@ const SerialsCarousel = (props) => {
    );
 };
 
-export default SerialsCarousel;
+export default RecentlyCarosel;

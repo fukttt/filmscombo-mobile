@@ -24,6 +24,8 @@ const PlayerScreen = ({ route }) => {
                 <style>
                   html, body{
                     overflow : hidden,
+					width: 100%,
+					height: 100%
                   }
                 </style>
               </head>
@@ -34,7 +36,6 @@ const PlayerScreen = ({ route }) => {
 					}}
 					mixedContentMode="always"
 					originWhitelist={["*svetacdn*"]}
-					mediaPlaybackRequiresUserAction={true}
 					androidLayerType="hardware"
 					domStorageEnabled={true}
 					style={{
@@ -43,7 +44,9 @@ const PlayerScreen = ({ route }) => {
 						alignSelf: "center",
 						alignContent: "center",
 					}}
-					javaScriptEnabled={true}
+					showsHorizontalScrollIndicator={false}
+					showsVerticalScrollIndicator={false}
+					sharedCookiesEnabled={true}
 					allowsFullscreenVideo={true}
 				/>
 			) : (

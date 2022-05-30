@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1080480966393",
+    "project_id": "filmscombo",
+    "storage_bucket": "filmscombo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080480966393:android:a59e666333e37faa84e428",
+        "android_client_info": {
+          "package_name": "com.fukttt.AwesomeProject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1080480966393-iiitbp1t2tt531l52t39sv0o377pjn93.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPxRoXhVMIB5-qXJwS5PglBDlJty6MC-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1080480966393-iiitbp1t2tt531l52t39sv0o377pjn93.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

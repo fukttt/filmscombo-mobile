@@ -45,7 +45,7 @@ const News = () => {
 				setData(json);
 			})
 			.catch((error) => {
-				alert(error);
+				console.log(error);
 			});
 	}, []);
 
@@ -131,7 +131,7 @@ const Settings = () => {
 				setactual(json.expo.version);
 			})
 			.catch((error) => {
-				alert(error);
+				console.log(error);
 			});
 	}, []);
 	return (

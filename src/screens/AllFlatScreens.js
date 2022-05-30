@@ -49,10 +49,16 @@ const btns = [
 	},
 ];
 
+const isPortrait = () => {
+	const dim = Dimensions.get("screen");
+	return dim.height >= dim.width;
+};
+
 class AllFlatItems extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			prot: isPortrait() ? true : false,
 			routeparams: props.route.params,
 			data: [],
 			deviceHeight: 0,
@@ -60,8 +66,13 @@ class AllFlatItems extends Component {
 			page: 1,
 			loading: true,
 			refreshing: false,
-			numColumns: 2,
 		};
+
+		Dimensions.addEventListener("change", () => {
+			this.setState({
+				prot: isPortrait() ? true : false,
+			});
+		});
 	}
 
 	handleRefreshing = () => {
@@ -77,13 +88,13 @@ class AllFlatItems extends Component {
 			url =
 				"https://videocdn.tv/api/" +
 				this.state.routeparams.typescreen +
-				"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&query=" +
+				"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=id&direction=desc&limit=20&query=" +
 				text;
 		} else {
 			url =
 				"https://videocdn.tv/api/" +
 				this.state.routeparams.typescreen +
-				"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&page=" +
+				"?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=id&direction=desc&limit=20&page=" +
 				this.state.page;
 		}
 		return fetch(url)
@@ -118,7 +129,7 @@ class AllFlatItems extends Component {
 				this.setState({ loading: false });
 			})
 			.catch((error) => {
-				alert(error);
+				console.log(error);
 			});
 	}
 
@@ -134,8 +145,7 @@ class AllFlatItems extends Component {
 			>
 				<View
 					style={{
-						backgroundColor: "#100e19",
-						paddingHorizontal: 25,
+						paddingHorizontal: this.state.prot ? 25 : 55,
 					}}
 				>
 					<TextInput
@@ -149,7 +159,7 @@ class AllFlatItems extends Component {
 						}}
 						keyboardType="default"
 						style={{
-							marginTop: ios ? 50 : 10,
+							marginTop: ios ? (this.state.prot ? 50 : 20) : 10,
 							borderWidth: 2,
 							borderRadius: 10,
 							color: "#7f8fa6",
@@ -163,7 +173,7 @@ class AllFlatItems extends Component {
 					style={{
 						backgroundColor: "#100e19",
 						paddingVertical: 15,
-						paddingHorizontal: 25,
+						paddingHorizontal: this.state.prot ? 25 : 55,
 					}}
 				>
 					<FlatList
@@ -212,72 +222,149 @@ class AllFlatItems extends Component {
 						hidesWhenStopped={true}
 						animating={this.state.loading}
 					/>
-					<FlatList
-						style={{ backgroundColor: "#100e19" }}
-						data={this.state.data}
-						onEndReachedThreshold={0.5}
-						refreshing={this.state.refreshing}
-						onRefresh={this.handleRefreshing}
-						onEndReached={() => {
-							this.setState({ page: this.state.page + 1 }, () => {
-								this.searchFilms("", false, "end");
-							});
-						}}
-						numColumns={this.state.numColumns}
-						renderItem={({ item }) => {
-							return (
-								<TouchableWithoutFeedback
-									activeOpacity={1}
-									key={item.id}
-									onPress={() => {
-										var p = item.frame
-											.toString()
-											.replace("\\", "")
-											.replace("//", "https://")
-											.replace("640", "100%")
-											.replace("480", "100%");
-										this.props.navigation.navigate("watch", {
-											frame: p,
-										});
-									}}
-								>
-									<View
-										style={{
-											width: Dimensions.get("window").width * 0.45,
-											padding: 5,
 
-											height: Dimensions.get("window").height * 0.3,
+					{this.state.prot ? (
+						<FlatList
+							key={"_"}
+							style={{ backgroundColor: "#100e19" }}
+							data={this.state.data}
+							onEndReachedThreshold={0.5}
+							refreshing={this.state.refreshing}
+							onRefresh={this.handleRefreshing}
+							onEndReached={() => {
+								this.setState({ page: this.state.page + 1 }, () => {
+									this.searchFilms("", false, "end");
+								});
+							}}
+							numColumns={2}
+							renderItem={({ item }) => {
+								return (
+									<TouchableWithoutFeedback
+										activeOpacity={1}
+										key={item.id}
+										onPress={() => {
+											var p = item.frame
+												.toString()
+												.replace("\\", "")
+												.replace("//", "https://")
+												.replace("640", "100%")
+												.replace("480", "100%");
+											this.props.navigation.navigate("watch", {
+												frame: p,
+											});
 										}}
 									>
-										<ImageBackground
-											source={{ uri: item.uri }}
+										<View
 											style={{
-												resizeMode: "stretch",
-												backgroundColor: "#1f1b2e",
-												borderRadius: 12,
-												flex: 1,
+												width: this.state.prot
+													? Dimensions.get("window").width * 0.45
+													: Dimensions.get("window").width * 0.25,
+												padding: 5,
+												marginLeft: 10,
+												height: this.state.prot
+													? Dimensions.get("window").height * 0.3
+													: Dimensions.get("window").height * 0.7,
 											}}
-											imageStyle={{ borderRadius: 12 }}
 										>
-											<View style={s.filmSearchText}>
-												<Text
-													style={{
-														color: "white",
-														fontSize: 15,
-														fontWeight: "bold",
-													}}
-												>
-													{item.title.substr(0, 10) + "..."}{" "}
-													{item.year}
-												</Text>
-											</View>
-										</ImageBackground>
-									</View>
-								</TouchableWithoutFeedback>
-							);
-						}}
-						keyExtractor={(item) => item.id}
-					/>
+											<ImageBackground
+												source={{ uri: item.uri }}
+												style={{
+													resizeMode: "stretch",
+													backgroundColor: "#1f1b2e",
+													borderTopLeftRadius: 12,
+													borderTopRightRadius: 12,
+													flex: 1,
+												}}
+												imageStyle={{ borderRadius: 12 }}
+											>
+												<View style={s.filmSearchText}>
+													<Text
+														style={{
+															color: "white",
+															fontSize: 15,
+															fontWeight: "bold",
+														}}
+													>
+														{item.title} {item.year}
+													</Text>
+												</View>
+											</ImageBackground>
+										</View>
+									</TouchableWithoutFeedback>
+								);
+							}}
+							keyExtractor={(item) => item.id}
+						/>
+					) : (
+						<FlatList
+							key={"#"}
+							columnWrapperStyle={{ justifyContent: "space-between" }}
+							style={{ backgroundColor: "#100e19" }}
+							data={this.state.data}
+							onEndReachedThreshold={0.5}
+							refreshing={this.state.refreshing}
+							onRefresh={this.handleRefreshing}
+							onEndReached={() => {
+								this.setState({ page: this.state.page + 1 }, () => {
+									this.searchFilms("", false, "end");
+								});
+							}}
+							numColumns={4}
+							renderItem={({ item }) => {
+								return (
+									<TouchableWithoutFeedback
+										activeOpacity={1}
+										key={item.id}
+										onPress={() => {
+											var p = item.frame
+												.toString()
+												.replace("\\", "")
+												.replace("//", "https://")
+												.replace("640", "100%")
+												.replace("480", "100%");
+											this.props.navigation.navigate("watch", {
+												frame: p,
+											});
+										}}
+									>
+										<View
+											style={{
+												width: Dimensions.get("window").width * 0.2,
+												height:
+													Dimensions.get("window").height * 0.7,
+												margin: 10,
+											}}
+										>
+											<ImageBackground
+												source={{ uri: item.uri }}
+												style={{
+													resizeMode: "stretch",
+													backgroundColor: "#1f1b2e",
+													borderTopLeftRadius: 12,
+													borderTopRightRadius: 12,
+													flex: 1,
+												}}
+												imageStyle={{ borderRadius: 12 }}
+											>
+												<View style={s.filmSearchText}>
+													<Text
+														style={{
+															color: "white",
+															fontSize: 15,
+															fontWeight: "bold",
+														}}
+													>
+														{item.title} {item.year}
+													</Text>
+												</View>
+											</ImageBackground>
+										</View>
+									</TouchableWithoutFeedback>
+								);
+							}}
+							keyExtractor={(item) => item.id}
+						/>
+					)}
 				</View>
 			</View>
 		);
