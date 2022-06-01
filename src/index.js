@@ -5,6 +5,7 @@ import {
    Pressable,
    Modal,
    Linking,
+   FlatList,
    ScrollView,
    SafeAreaView,
    StatusBar,
@@ -12,12 +13,14 @@ import {
    Dimensions,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import s from "./style";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 import MainSlider from "./components/MainSlider";
-import RecentlyCarosel from "./components/RecentlyFilms";
 
 import AllFlatScreens from "./screens/AllFlatScreens";
 import PlayerScreen from "./screens/playerscreen";
@@ -31,7 +34,9 @@ const TitleText = (props) => {
    return (
       <TouchableOpacity
          onPress={() => {
-            props.navigation.navigate("search", { typescreen: "animes" });
+            !props.link
+               ? props.navigation.navigate("search", { typescreen: "animes" })
+               : null;
          }}
       >
          <View
@@ -44,14 +49,25 @@ const TitleText = (props) => {
                alignItems: "center",
             }}
          >
-            <Ionicons name={props.icon} size={24} color="white" />
-            <Text style={s.title}>{props.title}</Text>
-            <Ionicons
-               name="arrow-forward"
-               size={20}
-               color="white"
-               style={{ marginRight: 15 }}
-            />
+            <View
+               style={{
+                  flex: 1,
+                  justifyContent: "flex-start",
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+               }}
+            >
+               <Ionicons name={props.icon} size={24} color="white" />
+               <Text style={s.title}>{props.title}</Text>
+            </View>
+            {!props.link ? (
+               <Ionicons
+                  name="arrow-forward"
+                  size={20}
+                  color="white"
+                  style={{ marginRight: 15 }}
+               />
+            ) : null}
          </View>
       </TouchableOpacity>
    );
@@ -67,6 +83,24 @@ const isPortrait = () => {
 };
 
 const HomeScreen = (props, { navigation }) => {
+   const btns = [
+      {
+         id: 1,
+         link: "https://t.me/filmscombo",
+         icon: <FontAwesome name="telegram" size={38} color="white" />,
+      },
+
+      {
+         id: 2,
+         link: "https://github.com/fukttt/filmscombo-mobile",
+         icon: <FontAwesome name="github" size={38} color="white" />,
+      },
+      {
+         id: 3,
+         name: expo.version,
+      },
+   ];
+
    Dimensions.addEventListener("change", () => {
       setprot(isPortrait() ? true : false);
    });
@@ -113,7 +147,7 @@ const HomeScreen = (props, { navigation }) => {
       <SafeAreaView style={s.container}>
          <StatusBar hidde />
          <Modal
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
@@ -125,7 +159,7 @@ const HomeScreen = (props, { navigation }) => {
                   flex: 1,
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: "#BBBBBE",
+                  backgroundColor: "#1f1b2e",
                }}
             >
                <Text
@@ -133,6 +167,7 @@ const HomeScreen = (props, { navigation }) => {
                      fontWeight: "bold",
                      textAlign: "center",
                      fontSize: 18,
+                     color: "#fff",
                   }}
                >
                   {modalText}
@@ -199,13 +234,73 @@ const HomeScreen = (props, { navigation }) => {
             key="asd"
             style={{ flex: 1, backgroundColor: "#100e19", paddingBottom: 50 }}
          >
+            <View
+               style={{
+                  flex: 0,
+                  paddingVertical: 10,
+                  paddingHorizontal: 25,
+
+                  backgroundColor: "#100e19",
+               }}
+            >
+               <Text style={{ color: "#fff", fontSize: 34, fontWeight: "900" }}>
+                  FilmsCombo
+               </Text>
+            </View>
+            <TitleText
+               icon="chatbox-ellipses"
+               title="Следи за новостями"
+               link
+            />
+            <View
+               style={{
+                  backgroundColor: "#100e19",
+                  paddingBottom: 15,
+                  paddingHorizontal: 15,
+               }}
+            >
+               <FlatList
+                  data={btns}
+                  keyExtractor={(item) => item.id}
+                  horizontal={true}
+                  renderItem={({ item }) => (
+                     <Pressable
+                        style={{
+                           alignItems: "center",
+                           justifyContent: "center",
+                           width: 100,
+                           height: 100,
+                           borderRadius: 4,
+                           marginRight: 8,
+                           backgroundColor: "#1f1b2e",
+                        }}
+                        onPress={() => {
+                           item.link ? Linking.openURL(item.link) : null;
+                        }}
+                     >
+                        {item.icon || null}
+                        {item.name ? (
+                           <Text
+                              style={{
+                                 color: "#fff",
+                                 marginTop: item.icon ? 10 : 0,
+                                 fontWeight: "800",
+                              }}
+                           >
+                              {item.name}
+                           </Text>
+                        ) : null}
+                     </Pressable>
+                  )}
+               />
+            </View>
             <TitleText
                icon="film"
                title="Фильмы"
                navigation={props.navigation}
                toScreen="films"
             />
-            <MainSlider api_name="movies" port={prot} />
+            <MainSlider api_name="movies" port={prot} navigation={navigation} />
             <TitleText
                icon="tv"
                title="Сериалы"
@@ -231,6 +326,93 @@ const HomeScreen = (props, { navigation }) => {
       </SafeAreaView>
    );
 };
+
+const Stack = createNativeStackNavigator();
+
+function HomeRoot() {
+   return (
+      <Stack.Navigator>
+         <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+               headerShown: false,
+            }}
+         />
+         <Stack.Screen
+            name="Player"
+            component={PlayerScreen}
+            options={{
+               headerBackTitle: "Назад",
+               title: "Плеер",
+               headerRight: () => (
+                  <View style={{ flex: 0, flexDirection: "row" }}>
+                     <Pressable onPress={() => alert("В разработке!")}>
+                        <FontAwesome name="heart" size={24} color="white" />
+                     </Pressable>
+                     <Pressable
+                        onPress={() => alert("В разработке!")}
+                        style={{ marginLeft: 15 }}
+                     >
+                        <Feather name="share" size={24} color="white" />
+                     </Pressable>
+                  </View>
+               ),
+               headerStyle: {
+                  backgroundColor: "#000",
+               },
+               headerTintColor: "#fff",
+               headerTitleStyle: {
+                  fontWeight: "800",
+               },
+            }}
+         />
+      </Stack.Navigator>
+   );
+}
+
+function SearchRoot() {
+   return (
+      <Stack.Navigator>
+         <Stack.Screen
+            name="Home"
+            component={AllFlatScreens}
+            initialParams={{ typescreen: "movies" }}
+            options={{
+               headerShown: false,
+            }}
+         />
+         <Stack.Screen
+            name="Player"
+            component={PlayerScreen}
+            options={{
+               headerBackTitle: "Назад",
+               title: "Плеер",
+               headerRight: () => (
+                  <View style={{ flex: 0, flexDirection: "row" }}>
+                     <Pressable onPress={() => alert("В разработке!")}>
+                        <FontAwesome name="heart" size={24} color="white" />
+                     </Pressable>
+                     <Pressable
+                        onPress={() => alert("В разработке!")}
+                        style={{ marginLeft: 15 }}
+                     >
+                        <Feather name="share" size={24} color="white" />
+                     </Pressable>
+                  </View>
+               ),
+               headerStyle: {
+                  backgroundColor: "#000",
+               },
+               headerTintColor: "#fff",
+               headerTitleStyle: {
+                  fontWeight: "800",
+               },
+            }}
+         />
+      </Stack.Navigator>
+   );
+}
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -263,7 +445,7 @@ export default function App() {
                   } else if (route.name === "search") {
                      iconName = focused ? "search" : "search";
                   } else if (route.name === "settings") {
-                     iconName = focused ? "settings" : "settings-outline";
+                     iconName = focused ? "newspaper" : "newspaper-outline";
                   }
 
                   // You can return any component that you like here!
@@ -279,7 +461,7 @@ export default function App() {
                   title: "Главная",
                   headerTintColor: "#fff",
                }}
-               component={HomeScreen}
+               component={HomeRoot}
             />
 
             <Tab.Screen
@@ -288,22 +470,12 @@ export default function App() {
                   title: "Поиск",
                   headerTintColor: "#fff",
                }}
-               component={AllFlatScreens}
-               initialParams={{ typescreen: "movies" }}
-            />
-            <Tab.Screen
-               name="watch"
-               options={{
-                  title: "Плеер",
-                  headerTintColor: "#fff",
-               }}
-               component={PlayerScreen}
-               initialParams={{ frame: "" }}
+               component={SearchRoot}
             />
             <Tab.Screen
                name="settings"
                options={{
-                  title: "Настройки",
+                  title: "Новости",
                   headerTintColor: "#fff",
                }}
                component={SettingsScreen}

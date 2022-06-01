@@ -62,7 +62,7 @@ const SerialsCarousel = (props) => {
          .replace("//", "https://")
          .replace("640", "100%")
          .replace("480", "100%");
-      navigation.navigate("watch", { frame: p });
+      navigation.navigate("Player", { frame: p });
    }
 
    useEffect(() => {
@@ -135,13 +135,17 @@ const SerialsCarousel = (props) => {
                         >
                            <View style={s.filmText}>
                               <Text
-                                 style={{ color: "white", fontWeight: "bold" }}
+                                 style={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: 11,
+                                 }}
                               >
-                                 {item.title.substr(0, 10) + "..."}
+                                 {item.title}
                               </Text>
                            </View>
                            <View style={s.filmTextRight}>
-                              <Text style={{ color: "white" }}>
+                              <Text style={{ color: "black" }}>
                                  {item.year}
                               </Text>
                            </View>
