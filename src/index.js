@@ -173,7 +173,7 @@ const SettingsModalScreen = (props) => {
                </Text>
                <SwitchSelector
                   options={options}
-                  initial={parseInt(settings.image_size)}
+                  initial={parseInt(settings?.image_size) || 0}
                   textColor="white" //'#7a44cf'
                   selectedColor="black"
                   buttonColor="#ddd"

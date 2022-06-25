@@ -130,7 +130,7 @@ class AllFlatItems extends Component {
             json.data.forEach((entry) => {
                let uri =
                   "http://st.kp.yandex.net/images/" +
-                  (settings.image_size
+                  (settings?.image_size
                      ? image_links[settings.image_size]
                      : image_links[2]) +
                   entry.kinopoisk_id +
