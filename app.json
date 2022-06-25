@@ -1,51 +1,48 @@
 {
-  "expo": {
-    "name": "FilmsCombo - фильмы, сериалы и аниме",
-    "slug": "FilmsCombo",
-    "version": "1.0.4",
-    "orientation": "default",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#100e19"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "filmcombo",
-      "requireFullScreen": true,
-      "googleServicesFile": "./GoogleService-Info.plist"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-        
+   "expo": {
+      "name": "FilmsCombo - фильмы, сериалы и аниме",
+      "slug": "FilmsCombo",
+      "version": "1.0.4",
+      "orientation": "default",
+      "icon": "./assets/icon.png",
+      "splash": {
+         "image": "./assets/splash.png",
+         "resizeMode": "contain",
+         "backgroundColor": "#100e19"
       },
-      "package": "com.fukttt.AwesomeProject",
-      "googleServicesFile": "./google-services.json"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "config": {
-        "firebase": {
-          "appId": "1:1080480966393:web:eaff85621058e97484e428",
-          "apiKey": "AIzaSyBNFGeCXYlVKPEw_j8Gakvgw0YQKiio8jM",
-          "projectId": "filmscombo",
-          "measurementId": "G-9ETZ1HDNBB"
-        }
+      "updates": {
+         "fallbackToCacheTimeout": 0
+      },
+      "assetBundlePatterns": ["**/*"],
+      "ios": {
+         "supportsTablet": true,
+         "bundleIdentifier": "filmcombo",
+         "requireFullScreen": true,
+         "googleServicesFile": "./GoogleService-Info.plist"
+      },
+      "android": {
+         "adaptiveIcon": {
+            "foregroundImage": "./assets/adaptive-icon.png",
+            "backgroundColor": "#FFFFFF"
+         },
+         "package": "com.fukttt.AwesomeProject",
+         "googleServicesFile": "./google-services.json"
+      },
+      "web": {
+         "favicon": "./assets/favicon.png",
+         "config": {
+            "firebase": {
+               "appId": "1:1080480966393:web:eaff85621058e97484e428",
+               "apiKey": "AIzaSyBNFGeCXYlVKPEw_j8Gakvgw0YQKiio8jM",
+               "projectId": "filmscombo",
+               "measurementId": "G-9ETZ1HDNBB"
+            }
+         }
+      },
+      "extra": {
+         "eas": {
+            "projectId": "e796fa5b-65a3-46a2-956a-70da2178dae4"
+         }
       }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "e796fa5b-65a3-46a2-956a-70da2178dae4"
-      }
-    }
-  }
+   }
 }

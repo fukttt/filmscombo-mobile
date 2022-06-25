@@ -62,7 +62,7 @@ const stylesheet = StyleSheet.create({
       marginTop: "auto",
       backgroundColor: "#fff",
       color: "#000",
-      padding: 10,
+      padding: 8,
       borderTopLeftRadius: 12,
       borderBottomRightRadius: 12,
    },

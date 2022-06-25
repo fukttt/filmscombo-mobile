@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { expo } from "../../app.json";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
+
 const copy = `# h1 Heading 8-)
  
 **This is some bold text!**
@@ -34,6 +35,58 @@ const News = () => {
       headers: myHeaders,
       cache: "no-cache",
    };
+
+   const btns = [
+      {
+         id: 1,
+         link: "https://4pda.to/forum/index.php?showtopic=1048306",
+         icon: <FontAwesome name="mobile" size={32} color="white" />,
+         name: "4PDA",
+      },
+      {
+         id: 2,
+         link: "https://t.me/filmscombo",
+         icon: <FontAwesome name="telegram" size={32} color="white" />,
+         name: "Телеграм",
+      },
+
+      {
+         id: 3,
+         link: "https://github.com/fukttt/filmscombo-mobile/releases",
+         icon: <FontAwesome name="github" size={32} color="white" />,
+         name: "Гитхаб",
+      },
+      {
+         id: 4,
+         link: "https://github.com/fukttt/filmscombo/releases",
+         icon: <FontAwesome name="desktop" size={32} color="white" />,
+         name: "ПК-версия",
+      },
+   ];
+
+   const todo = [
+      {
+         id: 1,
+         icon: <FontAwesome name="cloud" size={32} color="white" />,
+         name: "Облачная синхронизация",
+      },
+      {
+         id: 2,
+         icon: <FontAwesome name="user" size={32} color="white" />,
+         name: "Один профиль на всех устройствах",
+      },
+
+      {
+         id: 3,
+         icon: <FontAwesome name="history" size={32} color="white" />,
+         name: "История просмотров",
+      },
+      {
+         id: 4,
+         icon: <FontAwesome name="heart" size={32} color="white" />,
+         name: 'Добавление в "Понравившиеся"',
+      },
+   ];
 
    useEffect(() => {
       fetch(
@@ -58,7 +111,6 @@ const News = () => {
       >
          <View
             style={{
-               flex: 0,
                paddingVertical: 10,
                paddingHorizontal: 25,
 
@@ -70,40 +122,33 @@ const News = () => {
             </Text>
          </View>
 
-         <FlatList
+         <View
             style={{
-               flex: 1,
-               paddingVertical: 20,
-               paddingHorizontal: 25,
-
-               backgroundColor: "#100e19",
+               paddingHorizontal: 20,
             }}
-            data={data}
-            renderItem={({ item }) => (
-               <View
-                  style={{
-                     flex: 1,
-                     justifyContent: "center",
-                     marginBottom: 20,
-                     paddingBottom: 10,
-                     borderBottomWidth: 2,
-                     borderColor: "#eee",
-                  }}
-               >
+         >
+            <FlatList
+               style={{
+                  backgroundColor: "#100e19",
+               }}
+               data={data}
+               horizontal={true}
+               renderItem={({ item }) => (
                   <View
                      style={{
-                        flex: 1,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 5,
+                        marginRight: 5,
+                        padding: 10,
+                        borderRadius: 10,
+                        justifyContent: "center",
+                        alignItems: "flex-start",
+                        backgroundColor: "#1f1b2e",
                      }}
                   >
                      <Text
                         style={{
                            color: "#fff",
                            fontWeight: "bold",
-                           fontSize: 20,
+                           fontSize: 18,
                         }}
                      >
                         {item.title}
@@ -111,23 +156,132 @@ const News = () => {
                      <Text
                         style={{
                            color: "#fff",
-                           fontWeight: "bold",
+                           fontSize: 14,
+                           marginTop: 10,
                         }}
                      >
-                        {item.created_at}
+                        {item.text}
                      </Text>
                   </View>
+               )}
+            />
+         </View>
 
-                  <Text
+         <View
+            style={{
+               paddingVertical: 10,
+               paddingHorizontal: 25,
+
+               backgroundColor: "#100e19",
+            }}
+         >
+            <Text style={{ color: "#fff", fontSize: 34, fontWeight: "900" }}>
+               Социальное
+            </Text>
+         </View>
+         <View
+            style={{
+               paddingHorizontal: 20,
+            }}
+         >
+            <FlatList
+               data={btns}
+               keyExtractor={(item) => item.id}
+               horizontal={true}
+               renderItem={({ item }) => (
+                  <Pressable
                      style={{
-                        color: "#fff",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 100,
+                        height: 100,
+                        borderRadius: 4,
+                        marginRight: 8,
+                        backgroundColor: "#1f1b2e",
+                     }}
+                     onPress={() => {
+                        if (item.mod) {
+                           setsettingsModal(true);
+                        }
+                        if (item.link) {
+                           Linking.openURL(item.link);
+                        }
                      }}
                   >
-                     {item.text}
-                  </Text>
-               </View>
-            )}
-         />
+                     {item.icon || null}
+                     {item.name ? (
+                        <Text
+                           style={{
+                              color: "#fff",
+                              marginTop: item.icon ? 10 : 0,
+                              fontWeight: "800",
+                           }}
+                        >
+                           {item.name}
+                        </Text>
+                     ) : null}
+                  </Pressable>
+               )}
+            />
+         </View>
+         <View
+            style={{
+               paddingVertical: 10,
+               paddingHorizontal: 25,
+
+               backgroundColor: "#100e19",
+            }}
+         >
+            <Text style={{ color: "#fff", fontSize: 34, fontWeight: "900" }}>
+               Скоро ...
+            </Text>
+         </View>
+         <View
+            style={{
+               paddingHorizontal: 20,
+            }}
+         >
+            <FlatList
+               data={todo}
+               keyExtractor={(item) => item.id}
+               horizontal={true}
+               renderItem={({ item }) => (
+                  <Pressable
+                     style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 200,
+                        height: 150,
+                        borderRadius: 4,
+                        marginRight: 8,
+                        backgroundColor: "#1f1b2e",
+                     }}
+                     onPress={() => {
+                        if (item.mod) {
+                           setsettingsModal(true);
+                        }
+                        if (item.link) {
+                           Linking.openURL(item.link);
+                        }
+                     }}
+                  >
+                     {item.icon || null}
+                     {item.name ? (
+                        <Text
+                           style={{
+                              color: "#fff",
+                              marginTop: item.icon ? 10 : 0,
+                              fontWeight: "700",
+                           }}
+                        >
+                           {item.name}
+                        </Text>
+                     ) : null}
+                  </Pressable>
+               )}
+            />
+         </View>
       </SafeAreaView>
    );
 };

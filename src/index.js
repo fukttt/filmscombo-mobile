@@ -29,6 +29,34 @@ import { expo } from "../app.json";
 import * as Analytics from "expo-firebase-analytics";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SwitchSelector from "react-native-switch-selector";
+
+const storeData = async (key, value) => {
+   try {
+      const old = await AsyncStorage.getItem("@storage_settings");
+      const jsonValue = JSON.stringify({ ...JSON.parse(old), [key]: value });
+      await AsyncStorage.setItem("@storage_settings", jsonValue);
+   } catch (e) {
+      // saving error
+      console.log("err " + e);
+   }
+};
+
+const getData = async () => {
+   try {
+      const jsonValue = await AsyncStorage.getItem("@storage_settings");
+      if (jsonValue !== null) {
+         // value previously stored
+         //console.log("notn + " + JSON.parse(jsonValue).image_size);
+         return JSON.parse(jsonValue);
+      } else {
+         console.log("n");
+      }
+   } catch (e) {
+      // error reading value
+      console.log(e);
+   }
+};
 
 const TitleText = (props) => {
    return (
@@ -82,21 +110,102 @@ const isPortrait = () => {
    return dim.height >= dim.width;
 };
 
+const SettingsModalScreen = (props) => {
+   const options = [
+      { label: "маленькие", value: "0" },
+      { label: "средние", value: "1" },
+      { label: "большие", value: "2" },
+   ];
+   const [settings, setSettings] = useState({});
+
+   useEffect(() => {
+      async function ma() {
+         let a = await getData();
+         setSettings(a);
+      }
+      ma();
+   });
+   return (
+      <Modal
+         animationType="slide"
+         transparent={true}
+         visible={props.visible}
+         onRequestClose={() => {
+            props.set(!props.visible);
+         }}
+         onShow={() => {
+            async function ma() {
+               let a = await getData();
+               setSettings(a);
+            }
+            ma();
+         }}
+      >
+         <SafeAreaView
+            style={{
+               flex: 1,
+               justifyContent: "center",
+               backgroundColor: "rgba(31, 27, 46, 0.9)",
+            }}
+         >
+            <Pressable
+               style={{ position: "absolute", top: 40, right: 30 }}
+               onPress={() => props.set(!props.visible)}
+            >
+               <FontAwesome name="close" size={38} color="white" />
+            </Pressable>
+            <View
+               style={{
+                  flex: 1,
+                  marginTop: 30,
+                  paddingHorizontal: 40,
+               }}
+            >
+               <Text
+                  style={{
+                     color: "white",
+                     fontSize: 20,
+                     marginBottom: 15,
+                     fontWeight: "bold",
+                  }}
+               >
+                  Размер постеров
+               </Text>
+               <SwitchSelector
+                  options={options}
+                  initial={parseInt(settings.image_size)}
+                  textColor="white" //'#7a44cf'
+                  selectedColor="black"
+                  buttonColor="#ddd"
+                  backgroundColor="black"
+                  borderColor="#ddd"
+                  onPress={(value) => storeData("image_size", value)}
+               />
+            </View>
+         </SafeAreaView>
+      </Modal>
+   );
+};
+
 const HomeScreen = (props, { navigation }) => {
    const btns = [
       {
          id: 1,
+         icon: <FontAwesome name="gear" size={32} color="white" />,
+         name: "Настройки",
+         mod: true,
+      },
+      {
+         id: 2,
          link: "https://t.me/filmscombo",
-         icon: <FontAwesome name="telegram" size={38} color="white" />,
+         icon: <FontAwesome name="telegram" size={32} color="white" />,
+         name: "Телеграм",
       },
 
       {
-         id: 2,
-         link: "https://github.com/fukttt/filmscombo-mobile",
-         icon: <FontAwesome name="github" size={38} color="white" />,
-      },
-      {
          id: 3,
+         link: "https://github.com/fukttt/filmscombo-mobile/releases",
+         icon: <FontAwesome name="check" size={32} color="white" />,
          name: expo.version,
       },
    ];
@@ -106,6 +215,8 @@ const HomeScreen = (props, { navigation }) => {
    });
    const [prot, setprot] = useState(isPortrait() ? true : false);
    const [modalVisible, setmodalVisible] = useState(false);
+   const [settingsModal, setsettingsModal] = useState(false);
+   const [settings, setSettings] = useState({});
    const [modalText, setModalText] = useState(
       "Текст внутри.\nВозможно произошел какой-то сбой, сообщи разработчику об этом !"
    );
@@ -120,7 +231,7 @@ const HomeScreen = (props, { navigation }) => {
       console.log("Done.");
    };
    useEffect(() => {
-      // clearAll();
+      //clearAll();
       var semver = require("semver");
       fetch(
          "https://raw.githubusercontent.com/fukttt/filmscombo-mobile/master/app.json"
@@ -129,23 +240,29 @@ const HomeScreen = (props, { navigation }) => {
          .then((json) => {
             if (semver.gt(json.expo.version, expo.version)) {
                setmodalVisible(true);
-               setModalText(
-                  "Юхууу!\nДоступна новая версия приложения - " +
-                     json.expo.version +
-                     "!\nУстановленная на данный момент - " +
-                     expo.version
-               );
+               setModalText("Доступна новая версия приложения!");
             }
          })
          .catch((error) => {
             alert(error);
          });
       Analytics.logEvent("screen_view", "Home").then(() => {});
+      async function getAll() {
+         let data = await getData();
+         setSettings(data);
+      }
+      getAll();
+      async function getSettings() {
+         let a = await getData();
+         console.log(a);
+      }
+      getSettings();
    }, []);
 
    return (
       <SafeAreaView style={s.container}>
          <StatusBar hidde />
+         <SettingsModalScreen set={setsettingsModal} visible={settingsModal} />
          <Modal
             animationType="fade"
             transparent={true}
@@ -157,11 +274,18 @@ const HomeScreen = (props, { navigation }) => {
             <View
                style={{
                   flex: 1,
+                  paddingHorizontal: 40,
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: "#1f1b2e",
+                  backgroundColor: "rgba(31, 27, 46, 0.9)",
                }}
             >
+               <Pressable
+                  style={{ position: "absolute", top: 40, right: 30 }}
+                  onPress={() => setmodalVisible(false)}
+               >
+                  <FontAwesome name="close" size={38} color="white" />
+               </Pressable>
                <Text
                   style={{
                      fontWeight: "bold",
@@ -184,10 +308,10 @@ const HomeScreen = (props, { navigation }) => {
                >
                   <Pressable
                      style={{
-                        borderRadius: 10,
-                        padding: 15,
+                        borderRadius: 8,
+                        padding: 20,
                         elevation: 2,
-                        backgroundColor: "#673147",
+                        backgroundColor: "#100e19",
                      }}
                      onPress={() => {
                         Linking.openURL(
@@ -199,6 +323,7 @@ const HomeScreen = (props, { navigation }) => {
                         style={{
                            textAlign: "center",
                            color: "#fff",
+                           fontWeight: "bold",
                         }}
                      >
                         <Ionicons
@@ -207,24 +332,6 @@ const HomeScreen = (props, { navigation }) => {
                            color="#fff"
                         />{" "}
                         Скачать
-                     </Text>
-                  </Pressable>
-                  <Pressable
-                     style={{
-                        marginLeft: 5,
-                        borderRadius: 10,
-                        padding: 15,
-                        elevation: 2,
-                        backgroundColor: "#100e19",
-                     }}
-                     onPress={() => setmodalVisible(false)}
-                  >
-                     <Text
-                        style={{
-                           color: "#fff",
-                        }}
-                     >
-                        <Ionicons name="close" size={15} color="#fff" /> Закрыть
                      </Text>
                   </Pressable>
                </View>
@@ -247,11 +354,7 @@ const HomeScreen = (props, { navigation }) => {
                   FilmsCombo
                </Text>
             </View>
-            <TitleText
-               icon="chatbox-ellipses"
-               title="Следи за новостями"
-               link
-            />
+            <TitleText icon="chatbox-ellipses" title="Основное" link />
             <View
                style={{
                   backgroundColor: "#100e19",
@@ -275,7 +378,12 @@ const HomeScreen = (props, { navigation }) => {
                            backgroundColor: "#1f1b2e",
                         }}
                         onPress={() => {
-                           item.link ? Linking.openURL(item.link) : null;
+                           if (item.mod) {
+                              setsettingsModal(true);
+                           }
+                           if (item.link) {
+                              Linking.openURL(item.link);
+                           }
                         }}
                      >
                         {item.icon || null}
@@ -445,7 +553,9 @@ export default function App() {
                   } else if (route.name === "search") {
                      iconName = focused ? "search" : "search";
                   } else if (route.name === "settings") {
-                     iconName = focused ? "newspaper" : "newspaper-outline";
+                     iconName = focused
+                        ? "people-circle"
+                        : "people-circle-outline";
                   }
 
                   // You can return any component that you like here!
@@ -475,7 +585,7 @@ export default function App() {
             <Tab.Screen
                name="settings"
                options={{
-                  title: "Новости",
+                  title: "Профиль",
                   headerTintColor: "#fff",
                }}
                component={SettingsScreen}

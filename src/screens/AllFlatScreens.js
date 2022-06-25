@@ -23,6 +23,24 @@ import s from "../style";
 import { useNavigation } from "@react-navigation/native";
 import { render } from "react-dom";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const getData = async () => {
+   try {
+      const jsonValue = await AsyncStorage.getItem("@storage_settings");
+      if (jsonValue !== null) {
+         // value previously stored
+         //console.log("notn + " + JSON.parse(jsonValue).image_size);
+         return JSON.parse(jsonValue);
+      } else {
+         console.log("n");
+      }
+   } catch (e) {
+      // error reading value
+      console.log(e);
+   }
+};
+
 const ios = Platform.OS === "ios";
 
 const btns = [
@@ -81,34 +99,48 @@ class AllFlatItems extends Component {
       });
    };
 
-   searchFilms(text, search = false, type) {
+   async searchFilms(text, search = false, type) {
       this.setState({ loading: true });
       var url = "";
       if (search == true) {
          url =
             "https://videocdn.tv/api/" +
             this.state.routeparams.typescreen +
-            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=id&direction=desc&limit=20&query=" +
+            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&field=title&query=" +
             text;
       } else {
          url =
             "https://videocdn.tv/api/" +
             this.state.routeparams.typescreen +
-            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=id&direction=desc&limit=20&page=" +
+            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&page=" +
             this.state.page;
       }
+      let settings = await getData();
+
+      let image_links = {
+         0: "film/",
+         1: "film_iphone/iphone360_",
+         2: "film_big/",
+      };
+
       return fetch(url)
          .then((response) => response.json())
          .then((json) => {
             var data1 = [];
             json.data.forEach((entry) => {
+               let uri =
+                  "http://st.kp.yandex.net/images/" +
+                  (settings.image_size
+                     ? image_links[settings.image_size]
+                     : image_links[2]) +
+                  entry.kinopoisk_id +
+                  ".jpg";
                data1.push({
                   id: entry.id,
-                  uri:
-                     "http://st.kp.yandex.net/images/film_iphone/iphone360_" +
-                     entry.kinopoisk_id +
-                     ".jpg",
+                  uri: uri,
                   title: entry.ru_title,
+                  kp_id: entry.kinopoisk_id,
+                  quality: entry.media[0]?.source_quality || " - ",
                   year: this.state.routeparams.typescreen.includes("tv-series")
                      ? entry.start_date.split("-")[0]
                      : entry.year.split("-")[0],
@@ -160,9 +192,10 @@ class AllFlatItems extends Component {
                   keyboardType="default"
                   style={{
                      marginTop: ios ? (this.state.prot ? 50 : 20) : 10,
-                     borderWidth: 2,
+                     borderWidth: 4,
                      borderRadius: 10,
                      color: "#fff",
+                     fontSize: 18,
                      borderColor: "#1f1b2e",
                      padding: ios ? 15 : 10,
                      fontWeight: "bold",
@@ -286,6 +319,29 @@ class AllFlatItems extends Component {
                                           }}
                                        >
                                           {item.title}
+                                       </Text>
+                                    </View>
+                                    <View
+                                       style={{
+                                          position: "absolute",
+                                          backgroundColor: "#343c44",
+                                          bottom: 0,
+                                          marginLeft: 0,
+                                          overflow: "hidden",
+                                          left: 0,
+                                          padding: 8,
+                                          borderBottomLeftRadius: 12,
+                                          borderTopRightRadius: 12,
+                                       }}
+                                    >
+                                       <Text
+                                          style={{
+                                             color: "white",
+                                             fontWeight: "bold",
+                                             fontSize: 11,
+                                          }}
+                                       >
+                                          {item.quality.toUpperCase()}
                                        </Text>
                                     </View>
                                     <View style={s.filmTextRight}>
