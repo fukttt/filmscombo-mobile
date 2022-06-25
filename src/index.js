@@ -28,35 +28,7 @@ import SettingsScreen from "./screens/SettingsScreen";
 import { expo } from "../app.json";
 import * as Analytics from "expo-firebase-analytics";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import SwitchSelector from "react-native-switch-selector";
-
-const storeData = async (key, value) => {
-   try {
-      const old = await AsyncStorage.getItem("@storage_settings");
-      const jsonValue = JSON.stringify({ ...JSON.parse(old), [key]: value });
-      await AsyncStorage.setItem("@storage_settings", jsonValue);
-   } catch (e) {
-      // saving error
-      console.log("err " + e);
-   }
-};
-
-const getData = async () => {
-   try {
-      const jsonValue = await AsyncStorage.getItem("@storage_settings");
-      if (jsonValue !== null) {
-         // value previously stored
-         //console.log("notn + " + JSON.parse(jsonValue).image_size);
-         return JSON.parse(jsonValue);
-      } else {
-         console.log("n");
-      }
-   } catch (e) {
-      // error reading value
-      console.log(e);
-   }
-};
 
 const TitleText = (props) => {
    return (
@@ -173,13 +145,13 @@ const SettingsModalScreen = (props) => {
                </Text>
                <SwitchSelector
                   options={options}
-                  initial={parseInt(settings?.image_size) || 0}
+                  initial={0}
                   textColor="white" //'#7a44cf'
                   selectedColor="black"
                   buttonColor="#ddd"
                   backgroundColor="black"
                   borderColor="#ddd"
-                  onPress={(value) => storeData("image_size", value)}
+                  onPress={(value) => {}}
                />
             </View>
          </SafeAreaView>
@@ -189,12 +161,6 @@ const SettingsModalScreen = (props) => {
 
 const HomeScreen = (props, { navigation }) => {
    const btns = [
-      {
-         id: 1,
-         icon: <FontAwesome name="gear" size={32} color="white" />,
-         name: "Настройки",
-         mod: true,
-      },
       {
          id: 2,
          link: "https://t.me/filmscombo",
@@ -247,22 +213,12 @@ const HomeScreen = (props, { navigation }) => {
             alert(error);
          });
       Analytics.logEvent("screen_view", "Home").then(() => {});
-      async function getAll() {
-         let data = await getData();
-         setSettings(data);
-      }
-      getAll();
-      async function getSettings() {
-         let a = await getData();
-         console.log(a);
-      }
-      getSettings();
    }, []);
 
    return (
       <SafeAreaView style={s.container}>
          <StatusBar hidde />
-         <SettingsModalScreen set={setsettingsModal} visible={settingsModal} />
+
          <Modal
             animationType="fade"
             transparent={true}

@@ -39,7 +39,8 @@
     "sync-storage": "^0.4.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.2"
+    "@babel/core": "^7.18.2",
+    "eas-cli": "^0.54.1"
   },
   "private": true,
   "name": "filmscombo-mobile",

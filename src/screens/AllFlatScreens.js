@@ -23,24 +23,6 @@ import s from "../style";
 import { useNavigation } from "@react-navigation/native";
 import { render } from "react-dom";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const getData = async () => {
-   try {
-      const jsonValue = await AsyncStorage.getItem("@storage_settings");
-      if (jsonValue !== null) {
-         // value previously stored
-         //console.log("notn + " + JSON.parse(jsonValue).image_size);
-         return JSON.parse(jsonValue);
-      } else {
-         console.log("n");
-      }
-   } catch (e) {
-      // error reading value
-      console.log(e);
-   }
-};
-
 const ios = Platform.OS === "ios";
 
 const btns = [
@@ -115,8 +97,6 @@ class AllFlatItems extends Component {
             "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&direction=desc&limit=20&page=" +
             this.state.page;
       }
-      let settings = await getData();
-
       let image_links = {
          0: "film/",
          1: "film_iphone/iphone360_",
@@ -130,9 +110,7 @@ class AllFlatItems extends Component {
             json.data.forEach((entry) => {
                let uri =
                   "http://st.kp.yandex.net/images/" +
-                  (settings?.image_size
-                     ? image_links[settings.image_size]
-                     : image_links[2]) +
+                  image_links[2] +
                   entry.kinopoisk_id +
                   ".jpg";
                data1.push({

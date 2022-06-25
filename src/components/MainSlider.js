@@ -18,32 +18,12 @@ const OFFSET = 20;
 const ITEM_WIDTH = Dimensions.get("window").width * 0.35;
 const ITEM_HEIGHT = Dimensions.get("window").height * 0.25;
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const getData = async () => {
-   try {
-      const jsonValue = await AsyncStorage.getItem("@storage_settings");
-      if (jsonValue !== null) {
-         // value previously stored
-         //console.log("notn + " + JSON.parse(jsonValue).image_size);
-         return JSON.parse(jsonValue);
-      } else {
-         //console.log("n");
-      }
-   } catch (e) {
-      // error reading value
-      console.log(e);
-   }
-};
-
 const SerialsCarousel = (props) => {
    const scrollX = React.useRef(new Animated.Value(0)).current;
    const [data, setData] = useState([]);
    const [loading, setLoading] = useState(true);
    const [stored, setStored] = useState([]);
    const getMoviesFromApi = async () => {
-      let settings = await getData();
-
       let image_links = {
          0: "film/",
          1: "film_iphone/iphone360_",
@@ -60,9 +40,7 @@ const SerialsCarousel = (props) => {
             json.data.forEach((entry, id) => {
                let uri =
                   "http://st.kp.yandex.net/images/" +
-                  (settings?.image_size
-                     ? image_links[settings.image_size]
-                     : image_links[2]) +
+                  image_links[2] +
                   entry.kinopoisk_id +
                   ".jpg";
                data.push({
