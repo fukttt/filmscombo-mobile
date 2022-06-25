@@ -136,7 +136,7 @@ const News = () => {
                renderItem={({ item }) => (
                   <View
                      style={{
-                        marginRight: 5,
+                        marginRight: 10,
                         padding: 10,
                         borderRadius: 10,
                         justifyContent: "center",
