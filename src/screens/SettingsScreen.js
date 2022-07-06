@@ -39,7 +39,7 @@ const News = () => {
    const btns = [
       {
          id: 1,
-         link: "https://4fcombo.ru",
+         link: "https://fcombo.ru",
          icon: <FontAwesome name="globe" size={32} color="white" />,
          name: "Наш сайт",
       },
