@@ -32,7 +32,7 @@ const SerialsCarousel = (props) => {
       return fetch(
          "https://videocdn.tv/api/" +
             props.api_name +
-            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=released&limit=20&direction=desc"
+            "?api_token=jvbY6usny3y4hgcEvc51TPNunRRsPMms&ordering=created&limit=20&direction=desc"
       )
          .then((response) => response.json())
          .then((json) => {

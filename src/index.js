@@ -187,15 +187,6 @@ const HomeScreen = (props, { navigation }) => {
       "Текст внутри.\nВозможно произошел какой-то сбой, сообщи разработчику об этом !"
    );
 
-   clearAll = async () => {
-      try {
-         await AsyncStorage.clear();
-      } catch (e) {
-         // clear error
-      }
-
-      console.log("Done.");
-   };
    useEffect(() => {
       //clearAll();
       var semver = require("semver");

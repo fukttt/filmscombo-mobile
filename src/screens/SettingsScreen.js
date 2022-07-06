@@ -39,25 +39,31 @@ const News = () => {
    const btns = [
       {
          id: 1,
+         link: "https://4fcombo.ru",
+         icon: <FontAwesome name="globe" size={32} color="white" />,
+         name: "Наш сайт",
+      },
+      {
+         id: 2,
          link: "https://4pda.to/forum/index.php?showtopic=1048306",
          icon: <FontAwesome name="mobile" size={32} color="white" />,
          name: "4PDA",
       },
       {
-         id: 2,
+         id: 3,
          link: "https://t.me/filmscombo",
          icon: <FontAwesome name="telegram" size={32} color="white" />,
          name: "Телеграм",
       },
 
       {
-         id: 3,
+         id: 4,
          link: "https://github.com/fukttt/filmscombo-mobile/releases",
          icon: <FontAwesome name="github" size={32} color="white" />,
          name: "Гитхаб",
       },
       {
-         id: 4,
+         id: 5,
          link: "https://github.com/fukttt/filmscombo/releases",
          icon: <FontAwesome name="desktop" size={32} color="white" />,
          name: "ПК-версия",
